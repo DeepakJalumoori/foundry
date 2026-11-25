@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui";
 
 export default function Home() {
   return (
-    <main className="flex flex-1 flex-col">
+    <main id="main-content" tabIndex={-1} className="flex flex-1 flex-col focus:outline-none">
       <Section spacing="compact">
         <PageContainer>
           <div className="rounded-[var(--radius-panel)] border border-border bg-surface p-6 sm:p-8">

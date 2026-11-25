@@ -43,7 +43,10 @@ export function ComponentShowcase() {
   };
 
   return (
-    <div className="mt-8 grid gap-6">
+    <section aria-labelledby="showcase-heading" className="mt-8 grid gap-6">
+      <h2 id="showcase-heading" className="sr-only">
+        Component verification
+      </h2>
       <Card variant="standard">
         <CardHeader>
           <CardTitle>Interactive Controls & State Patterns (T008)</CardTitle>
@@ -202,6 +205,6 @@ export function ComponentShowcase() {
         confirmLabel="Confirm"
         cancelLabel="Cancel"
       />
-    </div>
+    </section>
   );
 }

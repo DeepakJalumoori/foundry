@@ -1,7 +1,7 @@
 # Foundry — Progress Log
 
 **Last updated:** 2026-11-26  
-**Project status:** Phase 1 in progress (T008 complete; awaiting approval for T009)  
+**Project status:** Phase 1 in progress (T009 complete; awaiting approval for T010)
 **Current phase:** Phase 1 — Frontend foundation and design system
 
 ## 1. Current state
@@ -9,6 +9,7 @@
 The product direction, architecture, design system, rules, and task breakdown are documented in `docs/*.md` inside the `Foundry/` project root.
 
 Phase 0 (T001–T005) is complete:
+
 - **Git initialization:** Initialized an empty Git repository inside `Foundry/` (`Foundry/.git`).
 - **Documentation organization:** Created `Foundry/docs/` and moved all six Markdown files (`PRD.md`, `ARCHITECTURE.md`, `DESIGN.md`, `RULES.md`, `TASKS.md`, `PROGRESS.md`) into `Foundry/docs/`.
 - **Repository hygiene:** Added `Foundry/.gitignore` covering Python, Node.js/Next.js, environment/secret files, SQLite databases, build artifacts, and IDE/OS files.
@@ -37,6 +38,7 @@ The design direction is a clean, light-first SaaS product inspired by the produc
 ## 3. Completed
 
 ### Planning
+
 - [x] Product vision and target audience defined.
 - [x] Core user journey documented.
 - [x] MVP and deferred scope documented.
@@ -46,6 +48,7 @@ The design direction is a clean, light-first SaaS product inspired by the produc
 - [x] Task breakdown created.
 
 ### Reconnaissance (Phase 0)
+
 - [x] **T001** Inspected workspace structure, Git state, and entry points.
 - [x] **T002** Inspected frontend state (greenfield; Node `v24.13.0` and npm `11.6.2` available).
 - [x] **T003** Inspected backend state (greenfield; Python `3.14.2` and pip `25.3` available).
@@ -53,13 +56,15 @@ The design direction is a clean, light-first SaaS product inspired by the produc
 - [x] **T005** Initialized Git in `Foundry/`, organized docs into `Foundry/docs/`, added `.gitignore`, evaluated Python 3.14 dependency compatibility, and wrote the repository-specific implementation plan.
 
 ### Implementation
+
 - [x] **T006** Scaffolded `Foundry/frontend/` (Next.js 16.4.6 App Router, React 19.3.0, TypeScript, Tailwind CSS 4.3.3, ESLint), configured `DESIGN.md` color/layout tokens and Geist typography in `app/globals.css` and `app/layout.tsx`, added `lib/utils.ts` and `components/shared/page-container.tsx`, and added a minimal Foundry placeholder in `app/page.tsx`. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
 - [x] **T007** Built reusable UI components under `frontend/components/ui/` (`Button`, `Input`, `Textarea`, `Card`, `Badge`, `Dialog`/`ConfirmDialog`, `StatusIndicator`, `Skeleton`/`SkeletonCard`, `EmptyState`, `ErrorState`, `index.ts`) and added a temporary interactive verification preview (`components/shared/component-showcase.tsx`) on `app/page.tsx`. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
 - [x] **T008** Completed and verified loading, error, empty, status, and confirmation state patterns: added `Tab`/`Shift+Tab` focus trapping, body scroll lock, and `dismissible` rules to `Dialog`/`ConfirmDialog`; added `SkeletonText` and accessible `LoadingState` (`role="status"`, `aria-busy="true"`, `sr-only` label) to `skeleton.tsx`; added `secondaryAction` to `EmptyState`; added `retrying`, `details`, and `secondaryAction` to `ErrorState`; added `live` (`role="status"`, `aria-live="polite"`) to `StatusIndicator`; updated `component-showcase.tsx` to exercise all states. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
+- [x] **T009** Audited and improved keyboard accessibility, ARIA/semantic HTML, focus management, and reduced-motion behavior: added a keyboard-accessible skip-to-main-content link in `app/layout.tsx` targeting `#main-content` in `app/page.tsx`, stabilized `Dialog` `onClose` via ref so parent re-renders do not overwrite `previousFocusRef` (with `isConnected` guard on focus restoration), switched `Button` loading spinner to `motion-safe:animate-spin`, and added semantic `<section>` + `<h2>` hierarchy in `component-showcase.tsx`. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
 
 ## 4. Current task
 
-**T008 complete.** Awaiting user approval before starting **T009** (Verify keyboard focus, accessible labels and reduced-motion behavior).
+**T009 complete.** Awaiting user approval before starting **T010** (Run lint/type checks and inspect desktop/mobile rendering).
 
 ## 5. Known risks, runtime compatibility, and open questions
 
@@ -77,6 +82,7 @@ The design direction is a clean, light-first SaaS product inspired by the produc
 No implementation bugs have been recorded because implementation has not yet been verified.
 
 Record each issue here with:
+
 - Date.
 - Task ID.
 - Reproduction steps.
@@ -87,17 +93,18 @@ Record each issue here with:
 
 ## 7. Decision log
 
-| Date | Decision | Reason |
-|---|---|---|
-| 2026-11-25 | Use Foundry as the product name | Product identity |
-| 2026-11-25 | Use a clean, light-first SaaS direction | Clear, trustworthy product experience |
-| 2026-11-25 | Keep human approval mandatory for outreach | User control and safety |
-| 2026-11-25 | Use deterministic match scoring | Reproducibility and explainability |
-| 2026-11-25 | Label demo and simulated data | Avoid misleading users |
+| Date       | Decision                                   | Reason                                |
+| ---------- | ------------------------------------------ | ------------------------------------- |
+| 2026-11-25 | Use Foundry as the product name            | Product identity                      |
+| 2026-11-25 | Use a clean, light-first SaaS direction    | Clear, trustworthy product experience |
+| 2026-11-25 | Keep human approval mandatory for outreach | User control and safety               |
+| 2026-11-25 | Use deterministic match scoring            | Reproducibility and explainability    |
+| 2026-11-25 | Label demo and simulated data              | Avoid misleading users                |
 
 ## 8. Repository-specific implementation plan & next steps
 
 ### Current structure
+
 ```text
 Foundry/
 ├── .git/
@@ -112,6 +119,7 @@ Foundry/
 ```
 
 ### Implementation plan (post-approval)
+
 1. **Phase 1 (T006–T010) — Frontend foundation:** Scaffold `Foundry/frontend/` (Next.js App Router, TypeScript, Tailwind CSS), define `DESIGN.md` tokens/typography (Geist/Inter), build reusable UI primitives (`Button`, `Input`, `Card`, `Badge`, `Dialog`, status/loading/error/empty states), and verify lint/typecheck/responsive rendering.
 2. **Phase 2 (T011–T018) — Marketing landing page:** Build the 10-section landing page in `frontend/` with honest product previews, connect CTAs to `/app/onboarding`, and verify responsive layout + production build.
 3. **Phase 3 (T019–T024) — Application shell & onboarding:** Build `/app/*` layout (persistent desktop sidebar, mobile nav), onboarding/resume upload UI, profile review/edit, preferences form, and dashboard with explicit demo/empty states.
@@ -124,7 +132,8 @@ Foundry/
 10. **Phase 10 (T070–T076) — Quality & demo readiness:** Run full pytest, lint, typecheck, production build, responsive checks (1440/768/390px), security/privacy review, and update `README.md` + `docs/`.
 
 ### Immediate next task
-- **T009** — *Verify keyboard focus, accessible labels and reduced-motion behavior* (waiting for user approval).
+
+- **T010** — _Run lint/type checks and inspect desktop/mobile rendering_ (waiting for user approval).
 
 ## 9. Update format
 
@@ -200,4 +209,15 @@ Checks run: npm run lint; npx tsc --noEmit; npm run build (after clearing .next)
 Results: ESLint passed with 0 errors/warnings; TypeScript typecheck passed with 0 errors; Next.js production build compiled in 8.2s and prerendered / and /_not-found.
 Known issues: No frontend unit/component test runner is installed yet (only lint, typecheck, and build were run).
 Next task: T009 (Verify keyboard focus, accessible labels and reduced-motion behavior) — awaiting user approval.
+```
+
+```text
+Date: 2026-11-26
+Task ID: T009
+Status: Done
+Files changed: Foundry/frontend/app/layout.tsx, Foundry/frontend/app/page.tsx, Foundry/frontend/components/ui/dialog.tsx, Foundry/frontend/components/ui/button.tsx, Foundry/frontend/components/shared/component-showcase.tsx, Foundry/docs/TASKS.md, Foundry/docs/PROGRESS.md
+Checks run: npm run lint; npx tsc --noEmit; npm run build (after clearing .next)
+Results: ESLint passed with 0 errors/warnings; TypeScript typecheck passed with 0 errors; Next.js production build compiled in 7.6s and prerendered / and /_not-found.
+Known issues: Automated browser/screen-reader testing was not run; T010 covers desktop/mobile rendering inspection.
+Next task: T010 (Run lint/type checks and inspect desktop/mobile rendering) — awaiting user approval.
 ```

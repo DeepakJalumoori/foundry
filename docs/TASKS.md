@@ -17,7 +17,7 @@
 - [x] **T006** Establish design tokens, typography, spacing and responsive container rules.
 - [x] **T007** Build reusable buttons, inputs, cards, badges, dialogs and status components.
 - [x] **T008** Build loading, error, empty and confirmation states.
-- [ ] **T009** Verify keyboard focus, accessible labels and reduced-motion behavior.
+- [x] **T009** Verify keyboard focus, accessible labels and reduced-motion behavior.
 - [ ] **T010** Run lint/type checks and inspect desktop/mobile rendering.
 
 **Exit criteria:** A consistent, accessible component foundation exists.
