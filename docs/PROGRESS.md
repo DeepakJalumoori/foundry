@@ -1,8 +1,8 @@
 # Foundry — Progress Log
 
 **Last updated:** 2026-11-26  
-**Project status:** Phase 1 in progress (T009 complete; awaiting approval for T010)
-**Current phase:** Phase 1 — Frontend foundation and design system
+**Project status:** Phase 1 complete (T006–T010 done; awaiting approval for Phase 2 / T011)
+**Current phase:** Phase 1 — Frontend foundation and design system (complete)
 
 ## 1. Current state
 
@@ -61,10 +61,11 @@ The design direction is a clean, light-first SaaS product inspired by the produc
 - [x] **T007** Built reusable UI components under `frontend/components/ui/` (`Button`, `Input`, `Textarea`, `Card`, `Badge`, `Dialog`/`ConfirmDialog`, `StatusIndicator`, `Skeleton`/`SkeletonCard`, `EmptyState`, `ErrorState`, `index.ts`) and added a temporary interactive verification preview (`components/shared/component-showcase.tsx`) on `app/page.tsx`. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
 - [x] **T008** Completed and verified loading, error, empty, status, and confirmation state patterns: added `Tab`/`Shift+Tab` focus trapping, body scroll lock, and `dismissible` rules to `Dialog`/`ConfirmDialog`; added `SkeletonText` and accessible `LoadingState` (`role="status"`, `aria-busy="true"`, `sr-only` label) to `skeleton.tsx`; added `secondaryAction` to `EmptyState`; added `retrying`, `details`, and `secondaryAction` to `ErrorState`; added `live` (`role="status"`, `aria-live="polite"`) to `StatusIndicator`; updated `component-showcase.tsx` to exercise all states. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
 - [x] **T009** Audited and improved keyboard accessibility, ARIA/semantic HTML, focus management, and reduced-motion behavior: added a keyboard-accessible skip-to-main-content link in `app/layout.tsx` targeting `#main-content` in `app/page.tsx`, stabilized `Dialog` `onClose` via ref so parent re-renders do not overwrite `previousFocusRef` (with `isConnected` guard on focus restoration), switched `Button` loading spinner to `motion-safe:animate-spin`, and added semantic `<section>` + `<h2>` hierarchy in `component-showcase.tsx`. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
+- [x] **T010** Verified `npm run lint`, `npx tsc --noEmit`, `npm run build`, and live browser rendering of `http://localhost:3000` at `1440x900`, `1280x800`, `768x1024`, `390x844`, and `360x800` via Chrome DevTools. Zero console errors, zero horizontal overflow, clean typography scaling, responsive wrapping, working loading/error/empty states, centered dialog + Escape dismissal, and visible `:focus-visible` outlines.
 
 ## 4. Current task
 
-**T009 complete.** Awaiting user approval before starting **T010** (Run lint/type checks and inspect desktop/mobile rendering).
+**T010 complete (Phase 1 exit criteria met).** Awaiting user approval before starting **T011** (Build the Foundry hero with profile input and clear CTA).
 
 ## 5. Known risks, runtime compatibility, and open questions
 
@@ -133,7 +134,7 @@ Foundry/
 
 ### Immediate next task
 
-- **T010** — _Run lint/type checks and inspect desktop/mobile rendering_ (waiting for user approval).
+- **T011** — _Build the Foundry hero with profile input and clear CTA_ (Phase 2 — Marketing landing page; waiting for user approval).
 
 ## 9. Update format
 
@@ -220,4 +221,15 @@ Checks run: npm run lint; npx tsc --noEmit; npm run build (after clearing .next)
 Results: ESLint passed with 0 errors/warnings; TypeScript typecheck passed with 0 errors; Next.js production build compiled in 7.6s and prerendered / and /_not-found.
 Known issues: Automated browser/screen-reader testing was not run; T010 covers desktop/mobile rendering inspection.
 Next task: T010 (Run lint/type checks and inspect desktop/mobile rendering) — awaiting user approval.
+```
+
+```text
+Date: 2026-11-26
+Task ID: T010
+Status: Done
+Files changed: Foundry/docs/TASKS.md, Foundry/docs/PROGRESS.md
+Checks run: npm run lint; npx tsc --noEmit; npm run build; live Chrome DevTools inspection of http://localhost:3000 at 1440x900, 1280x800, 768x1024, 390x844, 360x800
+Results: Automated checks passed (ESLint 0 errors, tsc 0 errors, Next.js build compiled in 652ms and prerendered / and /_not-found). Browser inspection passed across all 5 viewports with zero console errors, zero horizontal overflow, responsive wrapping, working loading/error/empty states, centered dialog + Escape dismissal, and visible keyboard focus outlines.
+Known issues: None.
+Next task: T011 (Build the Foundry hero with profile input and clear CTA) — awaiting user approval.
 ```
