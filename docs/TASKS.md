@@ -24,7 +24,7 @@
 
 ## Phase 2 — Marketing landing page
 
-- [ ] **T011** Build the Foundry hero with profile input and clear CTA.
+- [x] **T011** Build the Foundry hero with profile input and clear CTA.
 - [ ] **T012** Build the problem and value proposition section.
 - [ ] **T013** Build the four-step workflow section.
 - [ ] **T014** Build startup discovery and product preview sections.

@@ -1,8 +1,8 @@
 # Foundry — Progress Log
 
 **Last updated:** 2026-11-26  
-**Project status:** Phase 1 complete (T006–T010 done; awaiting approval for Phase 2 / T011)
-**Current phase:** Phase 1 — Frontend foundation and design system (complete)
+**Project status:** Phase 2 in progress (T011 complete; awaiting approval for T012)
+**Current phase:** Phase 2 — Marketing landing page
 
 ## 1. Current state
 
@@ -62,10 +62,11 @@ The design direction is a clean, light-first SaaS product inspired by the produc
 - [x] **T008** Completed and verified loading, error, empty, status, and confirmation state patterns: added `Tab`/`Shift+Tab` focus trapping, body scroll lock, and `dismissible` rules to `Dialog`/`ConfirmDialog`; added `SkeletonText` and accessible `LoadingState` (`role="status"`, `aria-busy="true"`, `sr-only` label) to `skeleton.tsx`; added `secondaryAction` to `EmptyState`; added `retrying`, `details`, and `secondaryAction` to `ErrorState`; added `live` (`role="status"`, `aria-live="polite"`) to `StatusIndicator`; updated `component-showcase.tsx` to exercise all states. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
 - [x] **T009** Audited and improved keyboard accessibility, ARIA/semantic HTML, focus management, and reduced-motion behavior: added a keyboard-accessible skip-to-main-content link in `app/layout.tsx` targeting `#main-content` in `app/page.tsx`, stabilized `Dialog` `onClose` via ref so parent re-renders do not overwrite `previousFocusRef` (with `isConnected` guard on focus restoration), switched `Button` loading spinner to `motion-safe:animate-spin`, and added semantic `<section>` + `<h2>` hierarchy in `component-showcase.tsx`. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
 - [x] **T010** Verified `npm run lint`, `npx tsc --noEmit`, `npm run build`, and live browser rendering of `http://localhost:3000` at `1440x900`, `1280x800`, `768x1024`, `390x844`, and `360x800` via Chrome DevTools. Zero console errors, zero horizontal overflow, clean typography scaling, responsive wrapping, working loading/error/empty states, centered dialog + Escape dismissal, and visible `:focus-visible` outlines.
+- [x] **T011** Replaced the temporary homepage showcase with the Foundry landing-page hero (`components/marketing/marketing-header.tsx`, `components/marketing/hero-section.tsx`, `app/page.tsx`): added Foundry branding & tagline, headline & supporting copy, honest LinkedIn/portfolio URL + PDF resume preview input with client-side validation and `"Find my startup matches"` / `"See how it works"` CTAs, illustrative 3-step product preview card, and `whitespace-nowrap shrink-0` fix on `Badge`. Verified `npm run lint`, `npx tsc --noEmit`, `npm run build`, and browser rendering across desktop (`1440px`, `1280px`), tablet (`768px`), and mobile (`390px`, `360px`).
 
 ## 4. Current task
 
-**T010 complete (Phase 1 exit criteria met).** Awaiting user approval before starting **T011** (Build the Foundry hero with profile input and clear CTA).
+**T011 complete.** Awaiting user approval before starting **T012** (Build the problem and value proposition section).
 
 ## 5. Known risks, runtime compatibility, and open questions
 
@@ -134,7 +135,7 @@ Foundry/
 
 ### Immediate next task
 
-- **T011** — _Build the Foundry hero with profile input and clear CTA_ (Phase 2 — Marketing landing page; waiting for user approval).
+- **T012** — _Build the problem and value proposition section_ (Phase 2 — Marketing landing page; waiting for user approval).
 
 ## 9. Update format
 
@@ -232,4 +233,15 @@ Checks run: npm run lint; npx tsc --noEmit; npm run build; live Chrome DevTools 
 Results: Automated checks passed (ESLint 0 errors, tsc 0 errors, Next.js build compiled in 652ms and prerendered / and /_not-found). Browser inspection passed across all 5 viewports with zero console errors, zero horizontal overflow, responsive wrapping, working loading/error/empty states, centered dialog + Escape dismissal, and visible keyboard focus outlines.
 Known issues: None.
 Next task: T011 (Build the Foundry hero with profile input and clear CTA) — awaiting user approval.
+```
+
+```text
+Date: 2026-11-26
+Task ID: T011
+Status: Done
+Files changed: Foundry/frontend/components/marketing/marketing-header.tsx, Foundry/frontend/components/marketing/hero-section.tsx, Foundry/frontend/components/ui/badge.tsx, Foundry/frontend/app/page.tsx, Foundry/docs/TASKS.md, Foundry/docs/PROGRESS.md
+Checks run: npm run lint; npx tsc --noEmit; npm run build; Chrome DevTools inspection of http://localhost:3000 at 1440x900, 1280x800, 768x1024, 390x844, 360x800
+Results: ESLint passed (0 errors), tsc passed (0 errors), Next.js build compiled in 2.7s and prerendered / and /_not-found. Browser inspection confirmed no overflow, responsive stacking, working validation/preview notice/scroll-to-preview, and visible focus outlines; fixed Badge text wrapping (whitespace-nowrap shrink-0) after inspection and re-ran lint/tsc/build.
+Known issues: Chrome profile extension injected fdprocessedid hydration warning in dev mode (not application code).
+Next task: T012 (Build the problem and value proposition section) — awaiting user approval.
 ```
