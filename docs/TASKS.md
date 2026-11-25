@@ -4,19 +4,19 @@
 
 ## Phase 0 — Repository reconnaissance
 
-- [ ] **T001** Inspect repository structure, existing Git state and current application entry points.
-- [ ] **T002** Inspect frontend dependencies, scripts, routes, styling and existing components.
-- [ ] **T003** Inspect backend dependencies, API routes, models, configuration and tests.
-- [ ] **T004** Read all six project documents and reconcile them with the actual repository.
-- [ ] **T005** Write a short implementation plan based on the real codebase. Do not modify product code yet.
+- [x] **T001** Inspect repository structure, existing Git state and current application entry points.
+- [x] **T002** Inspect frontend dependencies, scripts, routes, styling and existing components.
+- [x] **T003** Inspect backend dependencies, API routes, models, configuration and tests.
+- [x] **T004** Read all six project documents and reconcile them with the actual repository.
+- [x] **T005** Write a short implementation plan based on the real codebase. Do not modify product code yet.
 
 **Exit criteria:** The current state and safe next step are documented. Existing work is preserved.
 
 ## Phase 1 — Frontend foundation and design system
 
-- [ ] **T006** Establish design tokens, typography, spacing and responsive container rules.
-- [ ] **T007** Build reusable buttons, inputs, cards, badges, dialogs and status components.
-- [ ] **T008** Build loading, error, empty and confirmation states.
+- [x] **T006** Establish design tokens, typography, spacing and responsive container rules.
+- [x] **T007** Build reusable buttons, inputs, cards, badges, dialogs and status components.
+- [x] **T008** Build loading, error, empty and confirmation states.
 - [ ] **T009** Verify keyboard focus, accessible labels and reduced-motion behavior.
 - [ ] **T010** Run lint/type checks and inspect desktop/mobile rendering.
 

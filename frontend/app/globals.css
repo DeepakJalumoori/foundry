@@ -1,0 +1,123 @@
+@import "tailwindcss";
+
+:root {
+  /* Color tokens (light-first palette per DESIGN.md) */
+  --background: #F7F8FA;
+  --surface: #FFFFFF;
+  --surface-muted: #F0F2F5;
+  --foreground: #171923;
+  --muted: #687080;
+  --border: #E4E7EC;
+  --primary: #4355DB;
+  --primary-hover: #3546C5;
+  --primary-soft: #EEF0FF;
+  --success: #16845B;
+  --warning: #A96812;
+  --danger: #C33D4B;
+
+  /* Layout & shape tokens (4px base scale) */
+  --container-max: 72.5rem; /* 1160px */
+  --radius-control: 0.625rem; /* 10px */
+  --radius-card: 0.875rem; /* 14px */
+  --radius-panel: 1.25rem; /* 20px */
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-muted: var(--surface-muted);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-soft: var(--primary-soft);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+  --color-danger: var(--danger);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --radius-control: var(--radius-control);
+  --radius-card: var(--radius-card);
+  --radius-panel: var(--radius-panel);
+}
+
+html {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+/* Visible keyboard focus indicator */
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Respect reduced-motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Reusable typography helpers aligned with DESIGN.md scale */
+.text-display {
+  font-size: clamp(2.375rem, 4.5vw, 4rem); /* 38px -> 64px */
+  line-height: 1.08;
+  letter-spacing: -0.025em;
+  font-weight: 600;
+}
+
+.text-h1 {
+  font-size: clamp(2.25rem, 3.5vw, 3.25rem); /* 36px -> 52px */
+  line-height: 1.12;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+
+.text-h2 {
+  font-size: clamp(1.625rem, 2.5vw, 2.25rem); /* 26px -> 36px */
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  font-weight: 600;
+}
+
+.text-h3 {
+  font-size: clamp(1.25rem, 1.5vw, 1.5rem); /* 20px -> 24px */
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+
+.text-body {
+  font-size: clamp(0.9375rem, 0.25vw + 0.9rem, 1.0625rem); /* 15px -> 17px */
+  line-height: 1.6;
+}
+
+.text-supporting {
+  font-size: 0.875rem; /* 14px */
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.text-label {
+  font-size: 0.75rem; /* 12px */
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}

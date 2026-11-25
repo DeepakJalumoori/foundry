@@ -1,8 +1,8 @@
 # Foundry — Progress Log
 
-**Last updated:** 2026-11-25  
-**Project status:** Pre-implementation (Phase 0 complete — T001–T005 done)  
-**Current phase:** Phase 0 — Repository reconnaissance (complete; awaiting approval for Phase 1 / T006)
+**Last updated:** 2026-11-26  
+**Project status:** Phase 1 in progress (T008 complete; awaiting approval for T009)  
+**Current phase:** Phase 1 — Frontend foundation and design system
 
 ## 1. Current state
 
@@ -53,11 +53,13 @@ The design direction is a clean, light-first SaaS product inspired by the produc
 - [x] **T005** Initialized Git in `Foundry/`, organized docs into `Foundry/docs/`, added `.gitignore`, evaluated Python 3.14 dependency compatibility, and wrote the repository-specific implementation plan.
 
 ### Implementation
-- [ ] No application implementation exists yet.
+- [x] **T006** Scaffolded `Foundry/frontend/` (Next.js 16.4.6 App Router, React 19.3.0, TypeScript, Tailwind CSS 4.3.3, ESLint), configured `DESIGN.md` color/layout tokens and Geist typography in `app/globals.css` and `app/layout.tsx`, added `lib/utils.ts` and `components/shared/page-container.tsx`, and added a minimal Foundry placeholder in `app/page.tsx`. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
+- [x] **T007** Built reusable UI components under `frontend/components/ui/` (`Button`, `Input`, `Textarea`, `Card`, `Badge`, `Dialog`/`ConfirmDialog`, `StatusIndicator`, `Skeleton`/`SkeletonCard`, `EmptyState`, `ErrorState`, `index.ts`) and added a temporary interactive verification preview (`components/shared/component-showcase.tsx`) on `app/page.tsx`. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
+- [x] **T008** Completed and verified loading, error, empty, status, and confirmation state patterns: added `Tab`/`Shift+Tab` focus trapping, body scroll lock, and `dismissible` rules to `Dialog`/`ConfirmDialog`; added `SkeletonText` and accessible `LoadingState` (`role="status"`, `aria-busy="true"`, `sr-only` label) to `skeleton.tsx`; added `secondaryAction` to `EmptyState`; added `retrying`, `details`, and `secondaryAction` to `ErrorState`; added `live` (`role="status"`, `aria-live="polite"`) to `StatusIndicator`; updated `component-showcase.tsx` to exercise all states. Verified `npm run lint`, `npx tsc --noEmit`, and `npm run build` pass.
 
 ## 4. Current task
 
-**T005 complete.** Awaiting user approval before starting **T006** (Phase 1 — Frontend foundation and design system).
+**T008 complete.** Awaiting user approval before starting **T009** (Verify keyboard focus, accessible labels and reduced-motion behavior).
 
 ## 5. Known risks, runtime compatibility, and open questions
 
@@ -122,7 +124,7 @@ Foundry/
 10. **Phase 10 (T070–T076) — Quality & demo readiness:** Run full pytest, lint, typecheck, production build, responsive checks (1440/768/390px), security/privacy review, and update `README.md` + `docs/`.
 
 ### Immediate next task
-- **T006** — *Establish design tokens, typography, spacing and responsive container rules* (waiting for user approval).
+- **T009** — *Verify keyboard focus, accessible labels and reduced-motion behavior* (waiting for user approval).
 
 ## 9. Update format
 
@@ -165,4 +167,37 @@ Checks run: git init; Move-Item *.md docs/; py -0; pip --version; Get-ChildItem 
 Results: Git initialized in Foundry/. All 6 docs moved to Foundry/docs/. .gitignore created. Python 3.14.2 is the only Python installed; FastAPI/SQLAlchemy/PyMuPDF/google-genai/Pydantic v2 support 3.14, but LangChain/LangGraph have pydantic.v1 compatibility risks on 3.14.
 Known issues: LangChain/LangGraph compatibility with Python 3.14.2 must be mitigated (via Python 3.12/3.13 venv or verified dependency pins) in Phase 4.
 Next task: T006 (Establish design tokens, typography, spacing and responsive container rules) — awaiting user approval.
+```
+
+```text
+Date: 2026-11-26
+Task ID: T006
+Status: Done
+Files changed: Foundry/frontend/ (scaffolded Next.js app), Foundry/frontend/app/globals.css, Foundry/frontend/app/layout.tsx, Foundry/frontend/app/page.tsx, Foundry/frontend/lib/utils.ts, Foundry/frontend/components/shared/page-container.tsx, Foundry/docs/TASKS.md, Foundry/docs/PROGRESS.md
+Checks run: npm run lint; npx tsc --noEmit; npm run build (after clearing .next)
+Results: ESLint passed with 0 errors/warnings; TypeScript typecheck passed with 0 errors; Next.js production build compiled and prerendered / and /_not-found.
+Known issues: next/font/google requires network access during build to fetch Geist/Geist Mono; an earlier stale .next cache caused a transient Turbopack worker panic on Windows, resolved by clearing .next before building.
+Next task: T007 (Build reusable buttons, inputs, cards, badges, dialogs and status components) — awaiting user approval.
+```
+
+```text
+Date: 2026-11-26
+Task ID: T007
+Status: Done
+Files changed: Foundry/frontend/components/ui/{button,input,textarea,card,badge,dialog,status-indicator,skeleton,empty-state,error-state,index}.ts(x), Foundry/frontend/components/shared/component-showcase.tsx, Foundry/frontend/app/page.tsx, Foundry/docs/TASKS.md, Foundry/docs/PROGRESS.md
+Checks run: npm run lint; npx tsc --noEmit; npm run build (after clearing .next)
+Results: ESLint passed with 0 errors/warnings; TypeScript typecheck passed with 0 errors; Next.js production build compiled in 4.2s and prerendered / and /_not-found.
+Known issues: None in code; same Windows Turbopack .next cache note and network requirement for next/font/google during build.
+Next task: T008 — awaiting user approval.
+```
+
+```text
+Date: 2026-11-26
+Task ID: T008
+Status: Done
+Files changed: Foundry/frontend/components/ui/{dialog,skeleton,empty-state,error-state,status-indicator,index}.ts(x), Foundry/frontend/components/shared/component-showcase.tsx, Foundry/docs/TASKS.md, Foundry/docs/PROGRESS.md
+Checks run: npm run lint; npx tsc --noEmit; npm run build (after clearing .next)
+Results: ESLint passed with 0 errors/warnings; TypeScript typecheck passed with 0 errors; Next.js production build compiled in 8.2s and prerendered / and /_not-found.
+Known issues: No frontend unit/component test runner is installed yet (only lint, typecheck, and build were run).
+Next task: T009 (Verify keyboard focus, accessible labels and reduced-motion behavior) — awaiting user approval.
 ```
