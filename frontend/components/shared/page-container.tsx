@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { HTMLAttributes, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 interface PageContainerProps {
@@ -22,7 +22,7 @@ export function PageContainer({ children, className }: PageContainerProps) {
   );
 }
 
-interface SectionProps {
+interface SectionProps extends HTMLAttributes<HTMLElement> {
   children: ReactNode;
   className?: string;
   spacing?: "compact" | "default" | "spacious";
@@ -41,9 +41,10 @@ export function Section({
   children,
   className,
   spacing = "default",
+  ...props
 }: SectionProps) {
   return (
-    <section className={cn(SECTION_SPACING[spacing], className)}>
+    <section className={cn(SECTION_SPACING[spacing], className)} {...props}>
       {children}
     </section>
   );
