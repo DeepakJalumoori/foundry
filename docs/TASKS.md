@@ -1,154 +1,95 @@
-# Foundry — Implementation Tasks
+# Foundry — Implementation Roadmap
 
-**Execution rule:** Complete one task at a time. Verify it, update `PROGRESS.md`, then move to the next task. Do not start the next task while the current task has unresolved failures.
+**Scope:** Personal AI-powered job search agent targeting pre-seed to Series C startups.
+**Priority:** Working end-to-end agentic pipeline first; minimal, functional UI.
 
-## Phase 0 — Repository reconnaissance
+---
 
-- [x] **T001** Inspect repository structure, existing Git state and current application entry points.
-- [x] **T002** Inspect frontend dependencies, scripts, routes, styling and existing components.
-- [x] **T003** Inspect backend dependencies, API routes, models, configuration and tests.
-- [x] **T004** Read all six project documents and reconcile them with the actual repository.
-- [x] **T005** Write a short implementation plan based on the real codebase. Do not modify product code yet.
+## M1: Minimal interface and candidate input
 
-**Exit criteria:** The current state and safe next step are documented. Existing work is preserved.
+Keep M1 small—focus only on what is needed to accept candidate input, show processing state, and render structured results.
 
-## Phase 1 — Frontend foundation and design system
+- **Deliverables:**
+  1. Audit existing routes and dependencies; remove or redirect out-of-scope routes (`/onboarding`, `/app/matches`, `/app/contacts`, `/app/settings`, and SaaS marketing sections).
+  2. Inspect uncommitted T020 `ProfileWorkspace` (`frontend/components/app/profile/`): reuse useful resume/input components, simplify unnecessary profile-management UI, and remove any separate profile workspace.
+  3. Implement the minimal 4-state UI shell: minimal sign-in, candidate input (LinkedIn URL or PDF resume upload), agent processing state placeholder, and structured research results layout.
+  4. Verify `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
+- **Dependencies:** None (uses existing Next.js app and `frontend/components/ui/*`).
+- **Acceptance criteria:**
+  - Frontend has only the minimal sign-in, candidate input, processing state, and results interface.
+  - No 4-destination workspace, marketing landing page, or `/onboarding` flow remains active.
+  - Lint, typecheck, and production build pass with zero errors.
 
-- [x] **T006** Establish design tokens, typography, spacing and responsive container rules.
-- [x] **T007** Build reusable buttons, inputs, cards, badges, dialogs and status components.
-- [x] **T008** Build loading, error, empty and confirmation states.
-- [x] **T009** Verify keyboard focus, accessible labels and reduced-motion behavior.
-- [x] **T010** Run lint/type checks and inspect desktop/mobile rendering.
+---
 
-**Exit criteria:** A consistent, accessible component foundation exists.
+## M2: Backend foundation and persistence
 
-## Phase 2 — Marketing landing page
+- **Deliverables:**
+  1. Scaffold `Foundry/backend/` using Python 3.12 or 3.13, `pyproject.toml`, `.env.example`, and FastAPI app with CORS, `/api/health`, and minimal single-user `/api/auth/login` + `/api/auth/session`.
+  2. Configure SQLAlchemy + SQLite (`foundry.db`) and implement ORM models (`CandidateProfile`, `WorkflowRun`, `Company`, `CompanySignal`, `FounderContact`, `MatchResult`, `OutreachDraft`).
+  3. Implement Pydantic v2 schemas and repository layer.
+  4. Add `pytest` suite for health, auth, DB initialization, schema validation, and repository CRUD.
+- **Dependencies:** None (can begin immediately after M1 or in parallel).
+- **Acceptance criteria:**
+  - FastAPI starts cleanly on Python 3.12/3.13.
+  - SQLite persists and retrieves all core entities.
+  - All M2 `pytest` tests pass.
 
-- [x] **T011** Build the Foundry hero with profile input and clear CTA.
-- [x] **T012** Build the problem and value proposition section.
-- [x] **T013** Build the four-step workflow section.
-- [x] **T014** Build startup discovery and product preview sections.
-- [x] **T015** Build founder intelligence and outreach preview sections.
-- [x] **T016** Build trust, use cases, FAQ and final CTA/footer.
-- [x] **T017** Connect CTAs to actual onboarding routes.
-- [x] **T018** Verify responsive behavior and production build.
+---
 
-**Exit criteria:** Landing page is complete, truthful and navigable.
+## M3: Resume/LinkedIn processing and candidate intelligence
 
-## Phase 3 — Application shell and onboarding
+- **Deliverables:**
+  1. Implement secure PDF upload validation (extension, magic bytes, `MAX_RESUME_SIZE_MB`) and text extraction with PyMuPDF.
+  2. Implement LinkedIn URL input handling (no unauthorized scraping; structured validation + explicit user/demo handling).
+  3. Define `LLMProvider` interface and implement `GeminiLLMProvider` (via LangChain) + deterministic `DemoLLMProvider` fallback to extract skills, experience, education, and projects into `CandidateProfile`.
+  4. Add `pytest` tests for valid/malformed PDFs, LinkedIn URL validation, missing `GEMINI_API_KEY` fallback, and extraction persistence.
+- **Dependencies:** M2 (FastAPI, SQLAlchemy models, Pydantic schemas).
+- **Acceptance criteria:**
+  - Uploading a PDF or submitting a LinkedIn URL extracts and persists a structured `CandidateProfile`.
+  - Missing `GEMINI_API_KEY` cleanly falls back to `DemoLLMProvider` with explicit `demo` labelling.
+  - All M3 `pytest` tests pass.
 
-- [x] **T019** Build application layout and responsive navigation.
-- [ ] **T020** Build profile input and resume upload UI.
-- [ ] **T021** Build candidate profile review/edit screen.
-- [ ] **T022** Build candidate preference form.
-- [ ] **T023** Build overview/dashboard with honest empty and demo states.
-- [ ] **T024** Verify navigation and form validation.
+---
 
-**Exit criteria:** A user can complete onboarding in the frontend, with API integration either working or explicitly identified as pending.
+## M4: Startup discovery, company research, funding/hiring signals, and founder discovery
 
-## Phase 4 — Backend foundation and persistence
+- **Deliverables:**
+  1. Define `SearchProvider`, `ResearchProvider`, and `FounderDiscoveryProvider` interfaces; evaluate live vendor options before committing to a specific live provider.
+  2. Implement deterministic `Demo*` providers covering pre-seed to Series C startups with realistic funding signals, hiring signals (both **Active** and **Hidden** opportunities), founder details, email provenance, and verification statuses (`verified`, `unverified`, `unavailable`).
+  3. Enforce evidence rules in schemas/services: source URLs and dates where available, no fabricated emails/founders, and funding never treated as proof of hiring.
+  4. Add `pytest` tests verifying active vs. hidden classification, provenance fields, and fallback behavior.
+- **Dependencies:** M2 (persistence), M3 (candidate profile context).
+- **Acceptance criteria:**
+  - Discovery returns pre-seed to Series C startups with sourced company info, funding signals, hiring signals, and founder contacts.
+  - Active and hidden opportunities are clearly distinguished; funding alone never marks a company as actively hiring.
+  - All M4 `pytest` tests pass.
 
-- [ ] **T025** Inspect and finalize backend configuration and application startup.
-- [ ] **T026** Configure SQLAlchemy and database session lifecycle.
-- [ ] **T027** Implement initial domain models and migrations/schema creation strategy.
-- [ ] **T028** Implement Pydantic schemas and repository layer.
-- [ ] **T029** Implement health and demo-user endpoints.
-- [ ] **T030** Add tests for database setup, schemas and core endpoints.
+---
 
-**Exit criteria:** Backend starts reliably and persists core records.
+## M5: RAG, LangGraph orchestration, and deterministic matching
 
-## Phase 5 — Resume and candidate intelligence
+- **Deliverables:**
+  1. Implement lightweight local RAG using **SQLite/BM25** over candidate profile chunks and company research/signal chunks with source metadata (evaluating whether embeddings are needed).
+  2. Implement deterministic matching service (`30%` skills, `25%` role, `15%` experience, `15%` projects, `10%` preferences, `5%` location/work mode) plus LLM/template explanation and "why reach out" rationale grounded in retrieved evidence.
+  3. Build the single orchestrated LangGraph `StateGraph` (`candidate_input` → `candidate_profile_extraction` → `startup_discovery` → `company_research` → `funding_signal_analysis` → `hiring_signal_analysis` → `founder_discovery` → `rag_context_retrieval` → `deterministic_candidate_company_matching` → `personalized_outreach_generation` → `structured_results`) with persisted step events, timeouts, and bounded retries.
+  4. Expose `POST /api/runs`, `GET /api/runs/{run_id}`, and `GET /api/runs/{run_id}/results`; add `pytest` tests for score reproducibility, BM25 retrieval, and LangGraph failure/retry paths.
+- **Dependencies:** M3 (candidate extraction) and M4 (discovery, signals, founders).
+- **Acceptance criteria:**
+  - Submitting candidate input runs the full 11-node LangGraph pipeline and persists step-level progress.
+  - Match scores are 100% reproducible from stored inputs and never altered by an LLM.
+  - All M5 `pytest` tests pass.
 
-- [ ] **T031** Implement secure PDF upload validation.
-- [ ] **T032** Implement PDF text extraction with PyMuPDF.
-- [ ] **T033** Define candidate extraction schema and validation.
-- [ ] **T034** Implement Gemini provider behind an interface.
-- [ ] **T035** Add explicit demo fallback when Gemini is not configured.
-- [ ] **T036** Persist and expose candidate profile.
-- [ ] **T037** Add profile edit and preference endpoints.
-- [ ] **T038** Test extraction, malformed files, missing API key and provider failures.
+---
 
-**Exit criteria:** Candidate information can be extracted, reviewed, edited and persisted.
+## M6: Personalized outreach, integration, testing, and portfolio demonstration
 
-## Phase 6 — Startup discovery and research
-
-- [ ] **T039** Define SearchProvider, ResearchProvider and FounderDiscoveryProvider interfaces.
-- [ ] **T040** Add deterministic demo startup data with clear demo labels.
-- [ ] **T041** Implement discovery service and persistence.
-- [ ] **T042** Implement company research schema with evidence references.
-- [ ] **T043** Implement research synthesis using only supplied evidence.
-- [ ] **T044** Implement founder/contact records with source and verification status.
-- [ ] **T045** Add tests for provider fallbacks and unsupported claims.
-
-**Exit criteria:** Discovery and research results are persisted and their evidence status is visible.
-
-## Phase 7 — LangGraph workflow
-
-- [ ] **T046** Define typed workflow state.
-- [ ] **T047** Implement candidate analysis node.
-- [ ] **T048** Implement startup discovery node.
-- [ ] **T049** Implement company research node.
-- [ ] **T050** Implement founder research node.
-- [ ] **T051** Implement matching node integration.
-- [ ] **T052** Implement conditional routing and outreach generation node.
-- [ ] **T053** Persist execution status and step events.
-- [ ] **T054** Add retry, idempotency and failure-path tests.
-
-**Exit criteria:** A discovery workflow can run end-to-end, persist progress and report failures honestly.
-
-## Phase 8 — Matching and outreach
-
-- [ ] **T055** Implement deterministic weighted matching.
-- [ ] **T056** Persist dimension scores, reasons and missing skills.
-- [ ] **T057** Implement candidate/company retrieval abstraction for grounded context.
-- [ ] **T058** Implement outreach draft generation with source-grounded personalization.
-- [ ] **T059** Implement draft editing and versioning.
-- [ ] **T060** Implement explicit approve/reject endpoints and audit records.
-- [ ] **T061** Test score reproducibility, grounding and approval state transitions.
-
-**Exit criteria:** Matches are explainable and drafts can be edited and approved without automatic sending.
-
-## Phase 9 — Frontend integration
-
-- [ ] **T062** Implement centralized typed API client and error handling.
-- [ ] **T063** Connect resume upload and profile extraction.
-- [ ] **T064** Connect preferences and discovery workflow.
-- [ ] **T065** Display workflow progress and failure/retry states.
-- [ ] **T066** Connect startup results and company detail views.
-- [ ] **T067** Connect outreach editing and approval/rejection.
-- [ ] **T068** Connect activity/execution history.
-- [ ] **T069** Test the complete user journey in the browser.
-
-**Exit criteria:** The core journey works through the actual API, without hidden hardcoded substitutes.
-
-## Phase 10 — Quality, documentation and demo
-
-- [ ] **T070** Run backend tests and fix failures.
-- [ ] **T071** Run frontend lint, type checks and production build.
-- [ ] **T072** Test desktop, tablet and mobile layouts.
-- [ ] **T073** Review security, privacy, ownership checks and secret handling.
-- [ ] **T074** Verify demo/live labels and evidence presentation.
-- [ ] **T075** Update README, architecture and implementation status.
-- [ ] **T076** Prepare a repeatable demo flow and list known limitations.
-
-**Exit criteria:** A reproducible, honest MVP demo is ready.
-
-## Deferred backlog
-
-- [ ] **D001** Production authentication and account recovery.
-- [ ] **D002** Gmail/Outlook OAuth and sending, with explicit approval.
-- [ ] **D003** Inbox/reply monitoring.
-- [ ] **D004** Scheduled recurring discovery.
-- [ ] **D005** Production search provider and richer evidence ingestion.
-- [ ] **D006** Vector database integration if retrieval quality requires it.
-- [ ] **D007** Billing and subscription plans.
-
-## Working agreement
-
-For every task:
-1. State the task ID and expected outcome.
-2. Inspect relevant files.
-3. Make the smallest complete change.
-4. Run relevant checks.
-5. Update `PROGRESS.md`.
-6. Report blockers and the next single task.
+- **Deliverables:**
+  1. Implement grounded personalized email draft generation (citing retrieved candidate + company evidence), draft editing (`PUT /api/outreach/{draft_id}`), and explicit `approve` / `reject` endpoints (no automatic email sending).
+  2. Build centralized typed API client (`frontend/lib/api.ts`) and connect sign-in, candidate input, live workflow polling, structured results display, and draft approval/editing end-to-end.
+  3. Run full verification: backend `pytest`, frontend `lint` / `tsc` / `build`, end-to-end browser walkthrough (desktop + mobile), and evidence/security audit.
+  4. Update `README.md` and `docs/PROGRESS.md` with verified setup steps, demo walkthrough, and known limitations.
+- **Dependencies:** M1 (minimal frontend) and M5 (orchestrated backend pipeline).
+- **Acceptance criteria:**
+  - A candidate can sign in, upload a resume or enter a LinkedIn URL, watch the agent run, inspect grounded startup/funding/hiring/founder/match results, edit a draft, and approve or reject it—with all state persisted in SQLite.
+  - Zero fabricated contacts, zero unverified hiring claims, and zero automatic email sending.

@@ -1,291 +1,178 @@
 # Foundry — Architecture
 
-**Status:** Initial architecture  
-**Version:** 1.0
+**Status:** Final frozen architecture | **Version:** 3.0
+
+---
 
 ## 1. Architecture overview
 
-Foundry uses a TypeScript web frontend and a Python API/backend. The backend owns persistence, provider integrations, agent orchestration, matching, research and outreach generation.
+Foundry uses a minimal **Next.js + TypeScript** frontend communicating over HTTP/JSON with a **Python FastAPI** backend. The backend owns persistence (SQLite), resume/input processing, provider interfaces, lightweight local RAG (SQLite/BM25), deterministic matching, and a single orchestrated **LangGraph** workflow.
 
 ```text
-┌───────────────────────────────────────────────────────────┐
-│                    Next.js + TypeScript                    │
-│ Landing · Onboarding · Dashboard · Discovery · Outreach    │
-└────────────────────────────┬──────────────────────────────┘
-                             │ HTTP / JSON
-                             ▼
-┌───────────────────────────────────────────────────────────┐
-│                    FastAPI application                     │
-│ API routes · validation · auth boundary · error handling   │
-└──────────────┬──────────────────────────────┬───────────────┘
-               │                              │
-               ▼                              ▼
-┌──────────────────────────┐    ┌────────────────────────────┐
-│ Application services     │    │ LangGraph workflows        │
-│ Profiles · Matching      │    │ Candidate analysis         │
-│ Research · Outreach      │    │ Discovery · Research        │
-└──────────────┬───────────┘    │ Founder · Matching          │
-               │                │ Outreach generation         │
-               │                └──────────────┬─────────────┘
-               │                               │
-               ▼                               ▼
-┌──────────────────────────┐    ┌────────────────────────────┐
-│ SQLAlchemy repositories  │    │ Provider interfaces         │
-│ SQLite for MVP            │    │ Gemini · Search · Research  │
-│ Persistent workflow data  │    │ Founder discovery           │
-└──────────────────────────┘    └────────────────────────────┘
+┌────────────────────────────────────────────────────────────────┐
+│                  Minimal Frontend (Next.js + TS)               │
+│   Sign-in  ·  Candidate Input (Resume / LinkedIn URL)          │
+│   Agent Processing State  ·  Structured Research Results       │
+└──────────────────────────────┬─────────────────────────────────┘
+                               │ HTTP / JSON
+                               ▼
+┌────────────────────────────────────────────────────────────────┐
+│                    Backend (FastAPI + Pydantic v2)             │
+│   API Routes · Auth Gate · Upload Validation · Services        │
+└──────────────┬────────────────────────────────┬────────────────┘
+               │                                │
+               ▼                                ▼
+┌──────────────────────────────┐  ┌──────────────────────────────┐
+│  SQLAlchemy + SQLite         │  │  LangGraph Orchestrator      │
+│  Candidate · Runs ·          │  │  11-node sequential pipeline │
+│  Companies · Signals ·       │  │  Persisted step status       │
+│  Founders · Matches · Drafts │  │  Bounded retries & timeouts  │
+└──────────────┬───────────────┘  └──────────────┬───────────────┘
+               │                                 │
+               ▼                                 ▼
+┌──────────────────────────────┐  ┌──────────────────────────────┐
+│  Local RAG (SQLite / BM25)   │  │  Provider Interfaces         │
+│  Candidate & company chunks  │  │  LLMProvider (Gemini / Demo) │
+│  (Embeddings only if needed) │  │  SearchProvider              │
+└──────────────────────────────┘  │  ResearchProvider            │
+                                  │  FounderDiscoveryProvider    │
+                                  └──────────────────────────────┘
 ```
+
+---
 
 ## 2. Technology stack
 
 ### Frontend
-- Next.js App Router.
-- React.
-- TypeScript.
-- Tailwind CSS, if already present in the repository.
-- Framer Motion for restrained interaction animation, if installed and useful.
-- A small reusable component system.
+- **Framework:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4.
+- **UI primitives:** Reuse existing accessible components in `frontend/components/ui/` (`Button`, `Input`, `Textarea`, `Card`, `Badge`, `Dialog`, `StatusIndicator`, `Skeleton`, `EmptyState`, `ErrorState`).
 
-### Backend
-- Python 3.12+.
-- FastAPI.
-- Pydantic for request, response and structured model validation.
-- SQLAlchemy for persistence.
-- SQLite for local MVP development.
-- PyMuPDF for PDF text extraction.
-- LangChain for model/provider integrations where useful.
-- LangGraph for stateful multi-step agent workflows.
-- Google Gemini API through a backend-only provider.
+### Backend (to be implemented in M2–M6)
+- **Runtime:** Python 3.12 or 3.13 (recommended over 3.14 for clean `LangChain` / `LangGraph` `pydantic.v1` compatibility).
+- **API & Validation:** FastAPI + Pydantic v2.
+- **Persistence:** SQLAlchemy + SQLite (`foundry.db` initially).
+- **PDF Parsing:** PyMuPDF (`fitz`).
+- **Agentic AI:**
+  - **LangGraph** for the orchestrated multi-node workflow.
+  - **LangChain** for LLM and retrieval integrations.
+  - **Gemini API** initially via a backend-only `LLMProvider` (with deterministic demo fallback).
+- **RAG:** Lightweight local retrieval using **SQLite/BM25** initially. Add embeddings only if retrieval evaluation demonstrates a need.
 
-### Testing and tooling
-- Pytest for backend tests.
-- Frontend linting and production build.
-- HTTP integration tests for critical API flows.
-- Environment variables for local configuration.
+---
 
-Do not add libraries simply because they are fashionable. Check the current project and use existing dependencies where suitable.
+## 3. Frontend architecture and route cleanup
 
-## 3. Suggested repository structure
+The frontend is a single minimal flow—not a four-destination application:
+
+| View / State | Purpose |
+|---|---|
+| Minimal Sign-in | Simple single-user authentication gate. |
+| Candidate Input | LinkedIn profile URL or PDF resume upload + run trigger. |
+| Agent Processing State | Displays active LangGraph node progress and errors/retries. |
+| Research Results Interface | Displays discovered startups, funding/hiring signals + sources, active vs. hidden badge, why to reach out, founder name/role, public email + provenance/verification, match score + explanation, and editable outreach draft with approve/reject controls. |
+
+### Existing routes and uncommitted work (for M1 inspection)
+- **Out-of-scope routes:** `/onboarding`, `/app/matches`, `/app/contacts`, and `/app/settings` (along with the multi-section SaaS marketing landing page and separate workspace pages) are outside the final scope. During **M1**, inspect references and dependencies, then remove or redirect them cleanly. Do **not** modify or delete them during this documentation task.
+- **Uncommitted T020 `ProfileWorkspace`:** Preserve uncommitted work in `frontend/components/app/profile/` and `frontend/app/app/profile/page.tsx`. During **M1**, inspect it to reuse useful resume/profile input components, simplify unnecessary profile-management UI, and avoid maintaining a separate profile workspace.
+
+---
+
+## 4. LangGraph workflow
+
+One orchestrated `StateGraph` executes the full pipeline with typed state and persisted step events:
 
 ```text
-foundry/
-├── frontend/
-│   ├── app/
-│   │   ├── page.tsx
-│   │   ├── layout.tsx
-│   │   ├── globals.css
-│   │   └── app/
-│   │       ├── dashboard/page.tsx
-│   │       ├── onboarding/page.tsx
-│   │       ├── discovery/page.tsx
-│   │       ├── companies/[id]/page.tsx
-│   │       ├── outreach/page.tsx
-│   │       ├── activity/page.tsx
-│   │       └── settings/page.tsx
-│   ├── components/
-│   │   ├── marketing/
-│   │   ├── dashboard/
-│   │   ├── discovery/
-│   │   ├── company/
-│   │   ├── outreach/
-│   │   ├── onboarding/
-│   │   ├── shared/
-│   │   └── ui/
-│   ├── lib/
-│   │   ├── api.ts
-│   │   ├── types.ts
-│   │   └── utils.ts
-│   └── public/
-├── backend/
-│   ├── app/
-│   │   ├── main.py
-│   │   ├── api/
-│   │   ├── agents/
-│   │   ├── graphs/
-│   │   ├── models/
-│   │   ├── schemas/
-│   │   ├── services/
-│   │   ├── providers/
-│   │   ├── repositories/
-│   │   └── core/
-│   ├── tests/
-│   └── pyproject.toml
-├── docs/
-│   ├── PRD.md
-│   ├── ARCHITECTURE.md
-│   ├── DESIGN.md
-│   ├── RULES.md
-│   ├── TASKS.md
-│   └── PROGRESS.md
-├── .env.example
-├── .gitignore
-└── README.md
+candidate_input
+  → candidate_profile_extraction
+  → startup_discovery
+  → company_research
+  → funding_signal_analysis
+  → hiring_signal_analysis
+  → founder_discovery
+  → rag_context_retrieval
+  → deterministic_candidate_company_matching
+  → personalized_outreach_generation
+  → structured_results
 ```
 
-This is the target structure, not an instruction to move or delete existing files blindly. Inspect the repository first and adapt to its current layout.
+### Node responsibilities
+1. `candidate_input`: Validate resume PDF or LinkedIn URL input and initialize run state.
+2. `candidate_profile_extraction`: Extract text (PyMuPDF) and structure skills, experience, education, and projects via `LLMProvider` (Gemini or demo fallback).
+3. `startup_discovery`: Discover pre-seed to Series C startups via `SearchProvider`.
+4. `company_research`: Gather what each company does with source URLs and dates where available via `ResearchProvider`.
+5. `funding_signal_analysis`: Identify funding stage and recent funding evidence (explicitly not treated as hiring proof).
+6. `hiring_signal_analysis`: Inspect career-page and job-platform signals; classify each company as **Active** (public opening found) or **Hidden** (no public opening, other credible evidence).
+7. `founder_discovery`: Identify founders and publicly available professional emails with provenance and verification status (`verified` | `unverified` | `unavailable`).
+8. `rag_context_retrieval`: Index candidate and company evidence in SQLite/BM25 and retrieve top relevant chunks per company.
+9. `deterministic_candidate_company_matching`: Compute reproducible weighted score (`30/25/15/15/10/5%`) in pure Python and generate an evidence-backed explanation + "why reach out" rationale.
+10. `personalized_outreach_generation`: Draft a personalized founder email citing retrieved candidate and company evidence.
+11. `structured_results`: Persist final structured results and mark the run complete (`drafts` remain `pending` for human approval).
 
-## 4. Backend domain model
+---
 
-Initial entities:
+## 5. Domain data model
 
-- **User:** identity and account metadata.
-- **CandidateProfile:** structured candidate information.
-- **CandidatePreference:** role, location, work mode, industry and opportunity preferences.
-- **Company:** normalized company identity and public metadata.
-- **CompanyResearch:** research summary, evidence references, provider and timestamps.
-- **FounderContact:** founder/contact identity, source and verification status.
-- **MatchResult:** deterministic score, dimensions, explanation and workflow relation.
-- **OutreachDraft:** recipient, subject, body, status and version.
-- **AgentExecution:** workflow status, step events, errors and timing.
+Core SQLAlchemy entities in SQLite:
+- `CandidateProfile`: Extracted skills, experience, education, projects, input source (`resume` | `linkedin_url`), and raw extracted text.
+- `WorkflowRun`: Run ID, status (`queued` | `running` | `completed` | `failed`), current node, step-level events, provider mode (`demo` | `live`), and timestamps.
+- `Company`: Name, description, website, funding stage (pre-seed to Series C), opportunity type (`active` | `hidden`), data origin (`demo` | `live`).
+- `CompanySignal`: Company ID, signal category (`company_info` | `funding` | `hiring`), summary, source URL, source date (nullable), and verification status.
+- `FounderContact`: Company ID, name, role, public professional email (nullable), email provenance/source URL, and verification status (`verified` | `unverified` | `unavailable`).
+- `MatchResult`: Run ID, company ID, deterministic numeric score (`0–100`), dimension breakdown, matched/missing skills, why-reach-out rationale, and RAG-grounded explanation.
+- `OutreachDraft`: Run ID, company ID, founder contact ID (nullable), subject, body, cited evidence IDs, approval status (`pending` | `approved` | `rejected`), version, and timestamps.
 
-Use foreign keys and appropriate uniqueness constraints. Store timestamps in a consistent timezone-aware format. Avoid duplicating data that should be referenced by ID.
+---
 
-## 5. API boundaries
+## 6. Provider interfaces and RAG boundary
 
-Suggested endpoints (adapt names to existing conventions):
+### Provider interfaces
+Define abstract interfaces (`Protocol` or `ABC`) before concrete implementations:
+- `LLMProvider` (`GeminiLLMProvider`, `DemoLLMProvider`)
+- `SearchProvider` (`DemoSearchProvider`, live adapter deferred until M4 vendor evaluation)
+- `ResearchProvider` (`DemoResearchProvider`, live adapter deferred until M4 vendor evaluation)
+- `FounderDiscoveryProvider` (`DemoFounderProvider`, live adapter deferred until M4 vendor evaluation)
+
+Defer choosing a live search/research vendor until M4 requirements are evaluated. All demo outputs must be explicitly labelled `demo`.
+
+### RAG implementation
+- Start with **SQLite/BM25** full-text indexing over candidate chunks (skills, experience, projects) and company chunks (description, funding signals, hiring signals) with source metadata.
+- Evaluate retrieval quality in M5; add embeddings only if evaluation shows BM25 is insufficient.
+- No external vector database or unnecessary infrastructure.
+
+---
+
+## 7. API boundaries
+
+Core FastAPI endpoints (Pydantic v2 schemas at all boundaries):
 
 ```text
 GET    /api/health
+POST   /api/auth/login                  # Minimal single-user sign-in
+GET    /api/auth/session
 
-POST   /api/auth/demo
-GET    /api/auth/me
+POST   /api/runs                        # Submit LinkedIn URL or resume PDF & start LangGraph run
+GET    /api/runs/{run_id}               # Poll run status, current node, and step events
+GET    /api/runs/{run_id}/results       # Retrieve structured company, signal, founder, match & draft results
 
-POST   /api/candidate/resume
-GET    /api/candidate/profile
-PUT    /api/candidate/profile
-PUT    /api/candidate/preferences
-
-POST   /api/discovery/start
-GET    /api/discovery/workflows/{workflow_id}
-GET    /api/companies
-GET    /api/companies/{company_id}
-
-GET    /api/matches
-
-GET    /api/outreach
-GET    /api/outreach/{draft_id}
-PUT    /api/outreach/{draft_id}
-POST   /api/outreach/{draft_id}/approve
+PUT    /api/outreach/{draft_id}         # Edit draft subject/body
+POST   /api/outreach/{draft_id}/approve # Explicit candidate approval (never auto-sends)
 POST   /api/outreach/{draft_id}/reject
-
-GET    /api/agent-executions
 ```
 
-Use Pydantic schemas at API boundaries. Do not return ORM objects directly.
+---
 
-## 6. Data flow
+## 8. Configuration and secrets
 
-### Resume and profile
-1. Frontend uploads a PDF to FastAPI.
-2. Backend validates file type, size and content.
-3. PyMuPDF extracts text.
-4. Gemini provider optionally converts text into a structured Pydantic candidate profile.
-5. Backend validates and persists the result.
-6. Frontend displays the extracted profile for user review and editing.
-
-### Discovery and agent workflow
-1. Frontend requests a discovery workflow.
-2. FastAPI creates a persistent execution record.
-3. LangGraph receives candidate profile and preferences.
-4. Candidate analysis prepares normalized skills and role signals.
-5. Search provider discovers candidate companies.
-6. Research provider gathers source material.
-7. Founder discovery provider identifies relevant contacts where evidence exists.
-8. Matching service calculates deterministic scores.
-9. Outreach service generates drafts for suitable matches.
-10. Results and execution events are persisted.
-11. Frontend polls or retrieves workflow status and displays results.
-
-### Outreach approval
-1. Candidate opens a draft.
-2. Candidate edits if necessary.
-3. Candidate explicitly approves or rejects.
-4. Backend records the decision and version.
-5. MVP stops at approval; it does not send email automatically.
-
-## 7. Agent graph
-
-Suggested high-level graph:
-
-```text
-START
-  │
-  ▼
-candidate_analysis
-  │
-  ▼
-startup_discovery
-  │
-  ▼
-company_research
-  │
-  ▼
-founder_research
-  │
-  ▼
-candidate_matching
-  │
-  ├── no suitable matches ───────────────► END
-  │
-  ▼
-outreach_generation
-  │
-  ▼
-save_drafts
-  │
-  ▼
-END
-```
-
-Use typed graph state. Persist intermediate results and execution events. Make retries bounded and steps idempotent where possible. Do not use an LLM for deterministic database operations or score arithmetic.
-
-## 8. Provider interfaces
-
-Define interfaces before provider-specific implementation:
-
-- `LLMProvider`: structured generation and text generation.
-- `SearchProvider`: company discovery.
-- `ResearchProvider`: evidence collection and synthesis.
-- `FounderDiscoveryProvider`: contact discovery.
-
-Provide deterministic demo implementations. Demo data must be visibly labelled and must not masquerade as live research.
-
-## 9. RAG boundary
-
-RAG is an enhancement, not a prerequisite for the first working end-to-end flow.
-
-Initial retrieval corpus:
-- Candidate resume text.
-- Candidate projects and profile.
-- Company research documents and evidence.
-
-Keep metadata such as user ID, company ID, source, document type and timestamps. Enforce user-level data isolation. Start with a simple retrieval abstraction and SQLite-backed fallback if needed. Add a vector store only when there is a measured need.
-
-## 10. Configuration and secrets
-
-Example backend `.env.example`:
+Backend `.env.example` (secrets never exposed to frontend):
 
 ```env
 APP_ENV=development
 DATABASE_URL=sqlite:///./foundry.db
 GEMINI_API_KEY=
-GEMINI_MODEL=
+GEMINI_MODEL=gemini-2.5-flash
 AI_PROVIDER=demo
 SEARCH_PROVIDER=demo
 RESEARCH_PROVIDER=demo
 MAX_RESUME_SIZE_MB=5
+CORS_ORIGINS=http://localhost:3000
 ```
-
-The exact model identifier must be configured from a currently available model. Never expose `GEMINI_API_KEY` to browser code or commit real secrets.
-
-## 11. Reliability and security
-
-- Validate every request and upload.
-- Use parameterized ORM operations.
-- Apply timeouts and bounded retries to external calls.
-- Avoid logging resumes, access tokens, API keys or full private messages.
-- Keep demo and live providers explicit.
-- Persist workflow failures with actionable error codes.
-- Prevent duplicate workflow submissions where possible.
-- Keep approval separate from sending.
-- Add authentication and authorization before exposing private user data in production.

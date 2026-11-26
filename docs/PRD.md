@@ -1,187 +1,139 @@
 # Foundry — Product Requirements Document
 
-**Status:** Initial product definition  
-**Version:** 1.0  
-**Product:** Foundry  
-**Tagline:** Your next opportunity isn't always posted.
+**Status:** Final frozen product scope | **Version:** 3.0 | **Product:** Foundry
+**Nature:** Personal AI-powered job search agent targeting pre-seed to Series C startups (Agentic AI portfolio project, NOT a commercial SaaS product)
 
-## 1. Product vision
+---
 
-Foundry is an AI-powered career discovery and founder-outreach platform. It helps candidates identify relevant early-stage and growing startups, understand why they may be a fit, research the people behind those companies, and prepare thoughtful introductions.
+## 1. Product definition
 
-Foundry is not another job board. Its central workflow is **candidate intelligence → startup discovery → company and founder research → transparent matching → human-approved outreach**.
+Foundry is a simple AI-powered job search agent designed for candidates targeting **pre-seed to Series C startups**.
 
-The product should make proactive career discovery more focused, evidence-based, and less repetitive.
+It is built for personal use and as a serious Agentic AI engineering portfolio project. It is **not** a commercial SaaS product—there are no subscriptions, billing, marketing landing pages, or multi-tenant CRM features.
 
-## 2. Target users
+The candidate signs in, provides a **LinkedIn profile URL or resume**, and the agent:
 
-### Primary users
-- Final-year university students seeking internships or entry-level roles.
-- Early-career software engineers seeking startup opportunities.
-- Backend, full-stack, AI/ML and infrastructure-focused candidates.
+1. Extracts the candidate's skills, experience, education, and projects.
+2. Discovers relevant pre-seed to Series C startups.
+3. Researches what each company does.
+4. Identifies recent funding information.
+5. Finds hiring signals from company career pages and job platforms.
+6. Discovers company founders.
+7. Finds publicly available professional founder email addresses where possible.
+8. Explains why the candidate should approach each company.
+9. Calculates explainable candidate-company match scores.
+10. Uses RAG to retrieve relevant candidate and company evidence.
+11. Generates personalized founder outreach email drafts.
 
-### Secondary users
-- Experienced engineers interested in smaller companies.
-- Candidates exploring companies before a role is publicly advertised.
+Foundry generates drafts; the candidate manually reviews, approves, and sends them.
 
-### Initial candidate profile
-The initial product is optimized for technically oriented candidates. It should support other professional profiles later without hard-coding the product around one degree, school, or technology stack.
+---
 
-## 3. User problem
+## 2. Target user and problem
 
-Candidates often:
-- Apply to many roles without knowing whether the company is a good fit.
-- Compete in crowded application funnels.
-- Struggle to identify the right founder or hiring contact.
-- Send generic outreach that does not explain their relevance.
-- Spend significant time researching companies manually.
-- Have difficulty distinguishing genuine hiring signals from speculation.
+### Target user
+A technical candidate (student or engineer) targeting pre-seed to Series C startups.
 
-Foundry should reduce this research and preparation burden while keeping the candidate in control.
+### Problem
+- Searching across scattered startup lists, funding announcements, and career pages is slow and repetitive.
+- Many promising early-stage startups do not post formal openings on major job boards, or post them only on their own career pages.
+- Finding the right founder and verifying whether a public professional email exists takes manual effort.
+- Generic cold emails fail because they do not connect the candidate's specific projects and skills to sourced company evidence.
 
-## 4. Product promise
+---
 
-A candidate can provide a resume or profile, describe their preferences, and receive:
-1. A structured candidate profile.
-2. A shortlist of relevant startups.
-3. Company research with traceable evidence.
-4. Founder/contact information with source and verification status.
-5. An explainable fit assessment.
-6. A personalized outreach draft that the candidate can edit and approve.
+## 3. Core workflow
 
-Foundry must never promise a job, interview, reply, or hiring opportunity.
+Foundry runs a single orchestrated LangGraph workflow:
 
-## 5. Core user journey
+```text
+candidate_input
+  → candidate_profile_extraction
+  → startup_discovery
+  → company_research
+  → funding_signal_analysis
+  → hiring_signal_analysis
+  → founder_discovery
+  → rag_context_retrieval
+  → deterministic_candidate_company_matching
+  → personalized_outreach_generation
+  → structured_results
+```
 
-1. **Landing page:** The visitor understands the value proposition and starts onboarding.
-2. **Profile input:** The candidate uploads a PDF resume and/or provides profile links and information.
-3. **Profile extraction:** The system extracts structured information and presents it for correction.
-4. **Preferences:** The candidate chooses role types, technologies, locations, work modes, industries, company stages and opportunity types.
-5. **Discovery:** The candidate starts a discovery workflow.
-6. **Research:** Foundry gathers company evidence and researches relevant founders or contacts.
-7. **Matching:** Foundry calculates an explainable fit score from deterministic criteria.
-8. **Results:** The candidate reviews matches, evidence, fit dimensions and missing skills.
-9. **Outreach:** Foundry generates an editable, personalized draft.
-10. **Approval:** The candidate explicitly approves or rejects the draft.
-11. **Tracking:** The candidate sees draft and outreach statuses. Sending and inbox monitoring are later integrations, not assumed MVP capabilities.
+---
 
-## 6. MVP scope
+## 4. Opportunity classification
 
-### P0 — Required
-- Responsive marketing landing page.
-- Demo-mode onboarding and candidate profile.
-- PDF resume upload and text extraction.
-- Structured candidate profile extraction with Gemini when configured.
-- Candidate profile editing and persistence.
-- Candidate preferences.
-- Startup discovery through a provider interface.
-- Clearly labelled demo startup dataset when live search is not configured.
-- Company research summaries based only on supplied evidence.
-- Founder/contact discovery with source and verification fields.
-- Deterministic candidate-company matching with dimension-level explanations.
-- Personalized outreach draft generation.
-- Human approval, rejection and editing workflow.
-- Persistent workflow and agent execution status.
-- Dashboard, discovery, company detail, outreach and activity screens.
-- Useful loading, error, empty and retry states.
-- Clear indication of demo, simulated, unverified and verified data.
+Every discovered startup must be classified honestly based on available evidence:
 
-### P1 — After MVP
-- Production authentication and account management.
-- Configurable live search provider.
-- More robust research source ingestion and citation display.
-- Semantic retrieval over candidate and company information.
-- Improved workflow resumability and observability.
-- Export of candidate profile and outreach history.
+- **Active opportunities:** Relevant public job openings have been found on company career pages or job platforms (with source URLs and dates where available).
+- **Hidden opportunities:** No relevant public opening was found, but other credible evidence (such as product direction, technical stack alignment, team growth, or recent milestones) justifies considering a proactive approach.
 
-### Deferred
-- Automatic email sending.
-- Gmail or Outlook OAuth.
-- Reply and inbox monitoring.
-- Scheduled recurring discovery.
-- Payments and subscription billing.
-- Claims of verified hiring intent without reliable evidence.
-- Complex multi-tenant organization features.
+**Rule:** Funding alone is **not** proof of hiring. Recent funding is recorded as a funding signal, never as a substitute for a hiring signal.
 
-## 7. Functional requirements
+---
 
-### Candidate profile
-The profile may contain:
-- Name and contact details.
-- Education and experience.
-- Skills, languages, frameworks and databases.
-- Projects and achievements.
-- GitHub, LinkedIn and portfolio URLs.
-- Candidate-written summary.
+## 5. Minimal frontend scope
 
-The candidate must be able to review and edit extracted information before it is used for matching or outreach.
+The frontend is intentionally minimal—no four-destination workspace, no marketing landing page, no elaborate onboarding, and no settings or CRM dashboards.
 
-### Preferences
-Support:
-- Target roles.
-- Technologies.
-- Location preferences.
-- Remote, hybrid or onsite preference.
-- Internship or full-time preference.
-- Experience level.
-- Preferred industries and company stages.
+It consists of four focused views/states:
 
-### Startup discovery
-Each company record should distinguish:
-- Known company facts.
-- Research-derived claims.
-- Unverified information.
-- Demo-only content.
+1. **Minimal login/sign-in:** Simple single-user entry gate.
+2. **Candidate input:** LinkedIn profile URL or PDF resume upload (plus optional target role/preference hints).
+3. **Agent processing state:** Live step-by-step progress of the LangGraph workflow.
+4. **Research results interface:** Structured results per company showing:
+   - Company name and description.
+   - Funding stage and funding evidence (source URL and date where available).
+   - Hiring signals and their sources (clearly distinguishing **Active** vs. **Hidden** opportunities).
+   - Why the candidate should reach out.
+   - Founder name and role.
+   - Public professional email, if available.
+   - Email source and verification status.
+   - Deterministic match score and explanation.
+   - Personalized email draft (editable, with explicit candidate approval).
 
-A company should not be presented as actively hiring unless a reliable source supports that claim. Lack of a public job listing must not be interpreted as proof that a company is hiring.
+---
 
-### Matching
-The initial deterministic scoring model:
-- Skills alignment: 30%.
-- Role relevance: 25%.
-- Experience alignment: 15%.
-- Project relevance: 15%.
-- Candidate preferences: 10%.
-- Location/work-mode alignment: 5%.
+## 6. Functional and safety requirements
 
-The score must be reproducible from stored inputs. An LLM may explain the result but must not invent or silently alter the numeric score.
+### Candidate input and extraction
+- Accept a PDF resume upload (validated for type and size) or a LinkedIn profile URL.
+- **No unauthorized LinkedIn scraping:** LinkedIn URL input must never perform unauthorized scraping; it relies on user-supplied/publicly authorized data or explicit demo fallback until an authorized integration exists.
+- Allow the candidate to review extracted skills, experience, education, and projects.
 
-### Outreach
-Drafts must be grounded in the candidate's actual profile and sourced company research. Drafts are editable and versioned. No message is sent automatically in the MVP.
+### Discovery, signals, and founder contacts
+- Target startups from **pre-seed to Series C**.
+- Include source URLs and dates (where available) for company claims, funding evidence, and hiring signals.
+- Never fabricate founder names or email addresses.
+- Record email provenance (source URL/method) and verification status (`verified`, `unverified`, `unavailable`).
 
-## 8. Non-functional requirements
+### RAG and deterministic matching
+- Index candidate profile/resume chunks and company research/signal documents using a lightweight local retriever (**SQLite/BM25** initially; add embeddings only if retrieval evaluation demonstrates a need).
+- Compute candidate-company match scores deterministically in Python (`30%` skills, `25%` role, `15%` experience, `15%` projects, `10%` preferences, `5%` location/work mode).
+- LLMs may explain match scores using retrieved evidence, but **cannot** invent or alter deterministic match-score arithmetic.
 
-- Keep API keys and provider secrets on the backend.
-- Validate all external and user-supplied input.
-- Enforce file type and upload size limits.
-- Avoid logging full resumes, secrets or unnecessary personal data.
-- Use explicit timeouts and bounded retries for provider calls.
-- Persist important workflow state and failures.
-- Make long-running tasks observable to the frontend.
-- Support desktop, tablet and mobile layouts.
-- Respect reduced-motion preferences.
-- Keep frontend and backend responsibilities clearly separated.
-- Include tests for core business rules and API behavior.
+### Outreach and human control
+- Generate personalized founder outreach email drafts grounded in retrieved candidate and company evidence.
+- Require explicit candidate approval before outreach; **no automatic email sending**.
 
-## 9. Success criteria
+---
 
-The MVP is successful when a demo user can complete the core journey without manual database edits:
-- Upload a resume or enter a profile.
-- Review and save the extracted profile.
-- Set preferences.
-- Run a discovery workflow.
-- View startup matches and supporting evidence.
-- Open a company profile and inspect research.
-- Generate, edit, approve or reject an outreach draft.
-- Refresh the app and retain persisted data and statuses.
+## 7. Explicitly out of scope
 
-Success is measured by working, explainable product behavior—not fabricated match counts, reply rates or placement claims.
+- Marketing landing page, FAQ, pricing/billing, or SaaS conversion sections.
+- Multi-destination workspace navigation (Overview dashboard, separate Profile workspace, separate Discovery workspace, separate Outreach workspace, Matches, Contacts, Settings).
+- Elaborate multi-step onboarding wizards.
+- CRM features, inbox/reply monitoring, or Gmail/Outlook auto-sending.
+- Multi-tenant organizations or commercial SaaS infrastructure.
 
-## 10. Product principles
+---
 
-1. **Candidate control:** The user makes the final decision.
-2. **Evidence over confidence:** Show what supports a claim.
-3. **Honest AI:** Clearly label uncertainty and demo behavior.
-4. **Explainable matching:** Make scores inspectable.
-5. **Privacy by design:** Collect and retain only what the workflow needs.
-6. **Useful before clever:** Prefer a dependable end-to-end workflow over many disconnected agents.
+## 8. Acceptance criteria
+
+The MVP is complete when one candidate can:
+1. Sign in via the minimal login screen.
+2. Provide a resume PDF or LinkedIn URL.
+3. Trigger the LangGraph agent and observe step-by-step processing.
+4. Inspect structured results containing company info, funding/hiring signals with sources, active vs. hidden classification, founder details and email provenance, deterministic match score + explanation, and personalized outreach drafts.
+5. Edit and explicitly approve or reject a draft (persisted in SQLite) without automatic sending.

@@ -1,134 +1,76 @@
-# Foundry — Engineering and AI Agent Rules
+# Foundry — Engineering, Evidence, and AI Safety Rules
 
 These rules apply to every coding agent and contributor working in this repository.
 
+---
+
 ## 1. Before changing code
 
-1. Inspect the existing repository, package files, routes, components and tests.
-2. Read `PRD.md`, `ARCHITECTURE.md`, `DESIGN.md`, `TASKS.md` and `PROGRESS.md`.
-3. Identify the smallest task that can be completed safely.
-4. Reuse existing working code when appropriate.
-5. State the files you intend to change before a large or cross-cutting change.
-6. Do not assume the repository matches the proposed folder tree.
+1. Inspect the actual repository, routes, components, and tests; never assume docs match code.
+2. Read `docs/PRD.md`, `docs/ARCHITECTURE.md`, `docs/DESIGN.md`, `docs/TASKS.md`, and `docs/PROGRESS.md`.
+3. Reuse useful existing UI primitives (`frontend/components/ui/*`) instead of rebuilding them.
+4. Preserve uncommitted T020 `ProfileWorkspace` files until inspected during M1; do not discard or overwrite them.
+
+---
 
 ## 2. Scope discipline
 
-- Implement one task at a time.
-- Do not build future features unless the current task requires them.
-- Do not rewrite working systems merely to match personal preferences.
-- Do not add dependencies without a concrete need.
-- Do not silently change API contracts, database schemas or product behavior.
-- Keep pull-request-sized changes small and reviewable.
-- If requirements are ambiguous, record the ambiguity and ask before making a risky assumption.
+- Prioritize working backend/agent functionality over UI polish.
+- Do **not** build a 4-destination workspace, marketing landing page, onboarding wizard, settings dashboard, or CRM features.
+- Do **not** add unnecessary infrastructure (external vector DBs, Redis, Celery, multi-tenant auth).
+- Start RAG with **SQLite/BM25**; add embeddings only if retrieval evaluation proves it is needed.
+- Defer selecting a live search/research vendor until M4 requirements are evaluated.
+- Work one milestone/step at a time and verify before moving on.
 
-## 3. Code quality
+---
+
+## 3. Evidence and AI safety requirements (mandatory)
+
+Every agent node, service, and UI view must enforce these rules:
+
+1. **No unauthorized LinkedIn scraping:** Never scrape LinkedIn without authorization. Treat LinkedIn URL input via authorized APIs, user-provided context, or explicit demo fallbacks.
+2. **No fabricated founder names or emails:** Never invent founder identities, roles, or email addresses. If unavailable, mark as `unavailable`.
+3. **Email provenance and verification required:** Every discovered founder email must record its source URL/provenance and verification status (`verified`, `unverified`, `unavailable`).
+4. **Source URLs and dates:** Company claims, funding evidence, and hiring signals must include source URLs and dates where available.
+5. **Active vs. hidden distinction:** Clearly separate **Active opportunities** (relevant public job openings found) from **Hidden opportunities** (no public opening found, other credible evidence justifies an approach).
+6. **Funding is not proof of hiring:** Never present funding announcements or funding stage alone as proof that a company is hiring.
+7. **Deterministic match scores:** LLMs cannot invent, compute, or alter deterministic match-score arithmetic (`30/25/15/15/10/5%`).
+8. **No automatic email sending:** Foundry generates drafts only. No SMTP/OAuth auto-sending.
+9. **Candidate approval required:** Every outreach draft requires explicit human approval (`approved` / `rejected`) before manual sending by the candidate.
+10. **Honest demo labelling:** Deterministic demo/fallback data must be explicitly labelled `demo`.
+
+---
+
+## 4. Code quality
 
 ### TypeScript / React
-- Keep TypeScript strict; avoid `any` unless there is a documented reason.
-- Prefer small, composable components.
-- Keep API calls out of presentational components.
-- Centralize API configuration and typed request helpers.
-- Handle loading, error, empty and success states.
-- Use semantic HTML and accessible labels.
-- Do not leave dead buttons or misleading controls.
-- Do not suppress lint or type errors to make a build pass.
+- Strict TypeScript; avoid `any`.
+- Keep API calls centralized in `frontend/lib/api.ts`, separate from presentational components.
+- Handle loading, error, empty, and retry states explicitly.
+- Never leave dead buttons or suppress lint/type errors.
 
 ### Python
-- Use type hints for public functions and important data structures.
-- Use Pydantic schemas at API boundaries.
-- Keep routes thin; put business logic in services.
-- Keep persistence logic in repositories or a clear data-access layer.
-- Use SQLAlchemy consistently.
-- Raise and handle explicit domain errors.
-- Avoid broad `except Exception` unless the exception is logged safely and re-raised or converted at a deliberate boundary.
-- Keep provider-specific code behind interfaces.
+- Type hints on public functions and data structures.
+- Pydantic v2 schemas at all FastAPI boundaries; never return ORM objects directly.
+- Thin FastAPI routes; business logic in services, persistence in repositories, external integrations behind provider interfaces.
+- Explicit domain errors, bounded retries, and timeouts on external calls.
 
-### General
-- Prefer readable code over clever abstractions.
-- Use descriptive names.
-- Avoid duplicated business rules.
-- Add tests for meaningful business logic.
-- Keep functions focused.
-- Update documentation when behavior or architecture changes.
+---
 
-## 4. AI and agent behavior
+## 5. Privacy and security
 
-The AI coding agent must never:
-- Invent a feature and claim it is implemented.
-- Claim tests passed without running them.
-- Claim an integration works without verifying it.
-- Fabricate startup data, founder identities, emails, funding, hiring signals or citations.
-- Treat model-generated text as verified evidence.
-- Let an LLM decide deterministic score arithmetic.
-- silently change the matching weights.
-- send an email or contact a person without explicit user approval and a real sending integration.
-- expose secrets or copy them into frontend code.
-- commit API keys, passwords, tokens or private user data.
-- delete user work, existing routes or working components without explicit need and explanation.
-- replace real API data with hardcoded mock data while presenting it as live.
-- hide errors behind fake success states.
-- create placeholder controls that appear functional but do nothing.
+- Keep `GEMINI_API_KEY` and provider secrets strictly on the backend (never in `NEXT_PUBLIC_*` or browser code).
+- Validate PDF uploads by extension, MIME/magic bytes, and `MAX_RESUME_SIZE_MB`.
+- Avoid logging full resumes, secrets, or sensitive personal data.
+- Use parameterized SQLAlchemy queries and explicit CORS configuration.
 
-If a capability is unavailable, show a clear unavailable or demo state.
+---
 
-## 5. Product truth and evidence
+## 6. Testing and completion
 
-- Every company claim should have a source or be labelled as unverified/demo.
-- Every founder/contact detail should have a source and verification status.
-- A missing job listing does not prove a company is hiring.
-- A match score is a heuristic fit estimate, not a probability of getting hired.
-- Outreach must use facts from the candidate profile and available company evidence.
-- Do not invent candidate skills, experience, projects, achievements or personal connections.
-- Make it possible for users to inspect and edit AI-generated profile data and outreach.
+A milestone step is complete only when:
+1. Implemented behavior matches the frozen scope.
+2. Relevant tests (`pytest` for backend, `lint` / `tsc` / `build` for frontend) are run and passing.
+3. `docs/PROGRESS.md` is updated honestly, distinguishing implemented code, uncommitted work, and pending work.
 
-## 6. Privacy and security
-
-- Keep Gemini and other provider API keys on the backend.
-- Never prefix server secrets with a frontend-exposed environment variable name.
-- Validate file type, size and user input.
-- Avoid logging resumes, tokens, API keys or unnecessary personal data.
-- Enforce ownership checks for candidate, company-related private records, drafts and workflow access.
-- Do not trust user IDs supplied by the client as proof of authorization.
-- Keep CORS origins explicit outside local development.
-- Use safe error messages that do not expose stack traces or secrets to users.
-
-## 7. Agent workflow reliability
-
-- Persist workflow execution status.
-- Record step-level events and actionable failure reasons.
-- Use bounded retries and timeouts.
-- Make retried steps idempotent where possible.
-- Avoid duplicate discovery runs caused by repeated clicks.
-- Do not lose completed work when a later step fails.
-- Keep human approval as a separate, persisted action.
-- Do not describe generated drafts as sent messages.
-
-## 8. UI and design rules
-
-- Follow `DESIGN.md`.
-- Keep typography, spacing, colors and component states consistent.
-- Do not copy Backdoor AI's exact assets, text, source code or branding.
-- Do not introduce a second unrelated visual language.
-- Support keyboard navigation and visible focus.
-- Respect reduced-motion preferences.
-- Ensure mobile layouts are usable, not merely compressed.
-
-## 9. Testing and completion
-
-A task is complete only when:
-1. The requested behavior is implemented.
-2. Relevant tests are added or updated.
-3. Tests or checks are run.
-4. Failures are fixed or clearly documented.
-5. Documentation and `PROGRESS.md` are updated.
-6. No unrelated working behavior has been broken.
-
-Report:
-- What changed.
-- Files changed.
-- Commands/checks run.
-- Results.
-- Known limitations.
-- Recommended next task.
-
-Never report an unrun test as passing.
+Never claim an unrun test passed.
