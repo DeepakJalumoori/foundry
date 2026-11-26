@@ -4,6 +4,8 @@ import { ProblemSection } from "@/components/marketing/problem-section";
 import { WorkflowSection } from "@/components/marketing/workflow-section";
 import { StartupDiscoverySection } from "@/components/marketing/startup-discovery-section";
 import { ProductPreviewSection } from "@/components/marketing/product-preview-section";
+import { FounderIntelligenceSection } from "@/components/marketing/founder-intelligence-section";
+import { OutreachPreviewSection } from "@/components/marketing/outreach-preview-section";
 
 export default function Home() {
   return (
@@ -15,6 +17,8 @@ export default function Home() {
         <WorkflowSection />
         <StartupDiscoverySection />
         <ProductPreviewSection />
+        <FounderIntelligenceSection />
+        <OutreachPreviewSection />
       </main>
     </div>
   );

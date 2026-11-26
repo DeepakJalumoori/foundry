@@ -1,7 +1,7 @@
 # Foundry — Progress Log
 
 **Last updated:** 2026-11-26  
-**Project status:** Phase 2 in progress (T014 complete; awaiting approval for T015)  
+**Project status:** Phase 2 in progress (T015 complete; awaiting approval for T016)  
 **Current phase:** Phase 2 — Marketing landing page
 
 ## 1. Current state
@@ -66,10 +66,11 @@ The design direction is a clean, light-first SaaS product inspired by the produc
 - [x] **T012** Built the Problem and Value Proposition section (`components/marketing/problem-section.tsx`) immediately below the hero in `app/page.tsx` (and forwarded HTML attributes on `Section` in `components/shared/page-container.tsx`): editorial two-column composition contrasting the 3 core problems (`Hidden opportunities`, `Scattered research`, `Generic outreach`) with 5 candidate-controlled Foundry capabilities (`Discovery`, `Research`, `Contacts`, `Matching`, `Outreach`). Verified `npm run lint`, `npx tsc --noEmit`, `npm run build`, and live Chrome DevTools inspection across `1440x900`, `1280x800`, `768x1024`, `390x844`, and `360x800`.
 - [x] **T013** Built the Four-Step Workflow section (`components/marketing/workflow-section.tsx`) mounted below `ProblemSection` in `app/page.tsx`: semantic `<ol>` progression (`01 Build your candidate profile`, `02 Discover relevant startups`, `03 Research companies and founders`, `04 Prepare personalized outreach`) with desktop horizontal connector (`top-11`), 2×2 tablet grid, 1-column mobile stack, and candidate-control summary bar. Verified `npm run lint`, `npx tsc --noEmit`, `npm run build`, and Chrome DevTools inspection at `1440x900`, `768x1024`, `390x844`, and `360x800`.
 - [x] **T014** Built `StartupDiscoverySection` (`components/marketing/startup-discovery-section.tsx`) and `ProductPreviewSection` (`components/marketing/product-preview-section.tsx`) mounted below `WorkflowSection` in `app/page.tsx`: editorial weighted matching breakdown (`30/25/15/15/10/5%`) and an explicitly labelled illustrative demo workspace preview with shortlist cards, matched/missing skill explanations, and research evidence verification status. Verified `npm run lint`, `npx tsc --noEmit`, `npm run build`, and Chrome DevTools inspection across `1440x900`, `768x1024`, `390x844`, and `360x800`.
+- [x] **T015** Built `FounderIntelligenceSection` (`components/marketing/founder-intelligence-section.tsx`) and `OutreachPreviewSection` (`components/marketing/outreach-preview-section.tsx`) mounted below `ProductPreviewSection` in `app/page.tsx`: illustrative founder research card with `Verified` / `Unverified` / `Unavailable` distinction (never fabricating unavailable emails) and interactive demo outreach draft editor supporting `Edit draft`, `Approve draft`, `Reject`, and `Reset sample` without automatic sending. Verified `npm run lint`, `npx tsc --noEmit`, `npm run build`, and Chrome DevTools inspection across `1440x900`, `768x1024`, `390x844`, and `360x800`.
 
 ## 4. Current task
 
-**T014 complete.** Awaiting user approval before starting **T015** (Build founder intelligence and outreach preview sections).
+**T015 complete.** Awaiting user approval before starting **T016** (Build trust, use cases, FAQ and final CTA/footer).
 
 ## 5. Known risks, runtime compatibility, and open questions
 
@@ -138,7 +139,7 @@ Foundry/
 
 ### Immediate next task
 
-- **T015** — _Build founder intelligence and outreach preview sections_ (Phase 2 — Marketing landing page; waiting for user approval).
+- **T016** — _Build trust, use cases, FAQ and final CTA/footer_ (Phase 2 — Marketing landing page; waiting for user approval).
 
 ## 9. Update format
 
@@ -280,4 +281,15 @@ Checks run: npm run lint; npx tsc --noEmit; npm run build; Chrome DevTools inspe
 Results: ESLint passed (0 errors), tsc passed (0 errors), Next.js build compiled in 825ms and prerendered / and /_not-found. Browser inspection confirmed 0 console errors from #startup-discovery/#product-preview and 0 horizontal overflow across all 4 viewports; updated mobile evidence badge alignment (items-start) and shortlist footer layout after inspection, then re-ran lint/tsc/build.
 Known issues: None.
 Next task: T015 (Build founder intelligence and outreach preview sections) — awaiting user approval.
+```
+
+```text
+Date: 2026-11-26
+Task ID: T015
+Status: Done
+Files changed: Foundry/frontend/components/marketing/founder-intelligence-section.tsx, Foundry/frontend/components/marketing/outreach-preview-section.tsx, Foundry/frontend/app/page.tsx, Foundry/docs/TASKS.md, Foundry/docs/PROGRESS.md
+Checks run: npm run lint; npx tsc --noEmit; npm run build; Chrome DevTools inspection of http://localhost:3000 at 1440x900, 768x1024, 390x844, 360x800
+Results: ESLint passed (0 errors), tsc passed (0 errors), Next.js build compiled in 1877ms and prerendered / and /_not-found. Browser inspection confirmed 0 horizontal overflow across all 4 viewports, clean layout/badge alignment, and working interactive Edit/Approve/Reject/Reset controls on #personalized-outreach.
+Known issues: Chrome profile extension injects fdprocessedid hydration warning on buttons in dev mode (not application code).
+Next task: T016 (Build trust, use cases, FAQ and final CTA/footer) — awaiting user approval.
 ```
