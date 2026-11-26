@@ -11,7 +11,6 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
   Input,
   StatusIndicator,
   Textarea,
@@ -182,6 +181,7 @@ export function OnboardingFlow() {
   return (
     <Section spacing="compact" className="py-8 sm:py-12">
       <PageContainer className="max-w-3xl">
+        <h1 className="sr-only">Foundry Candidate Onboarding</h1>
         {/* Top context + stepper */}
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2.5">
@@ -233,9 +233,9 @@ export function OnboardingFlow() {
               <Badge variant="primary" className="w-fit">
                 Step 1 of 4 · Welcome
               </Badge>
-              <CardTitle className="mt-3 text-[22px] sm:text-[26px]">
+              <h2 className="mt-3 text-[22px] font-semibold text-foreground sm:text-[26px]">
                 Set up your Foundry candidate profile
-              </CardTitle>
+              </h2>
               <CardDescription className="mt-2 text-[15px]">
                 Foundry helps you discover relevant early-stage startups,
                 inspect sourced company and founder research, and prepare
@@ -283,9 +283,9 @@ export function OnboardingFlow() {
               <Badge variant="primary" className="w-fit">
                 Step 2 of 4 · Candidate profile
               </Badge>
-              <CardTitle className="mt-3 text-[22px]">
+              <h2 className="mt-3 text-[22px] font-semibold text-foreground">
                 Tell us about your background
-              </CardTitle>
+              </h2>
               <CardDescription>
                 Required fields are marked with *. Optional links and resume
                 PDF can be skipped.
@@ -413,9 +413,9 @@ export function OnboardingFlow() {
               <Badge variant="primary" className="w-fit">
                 Step 3 of 4 · Opportunity preferences
               </Badge>
-              <CardTitle className="mt-3 text-[22px]">
+              <h2 className="mt-3 text-[22px] font-semibold text-foreground">
                 What kind of startups are you looking for?
-              </CardTitle>
+              </h2>
               <CardDescription>
                 These preferences guide transparent candidate-company matching.
               </CardDescription>
@@ -519,9 +519,9 @@ export function OnboardingFlow() {
               <Badge variant="primary" className="w-fit">
                 Step 4 of 4 · Review
               </Badge>
-              <CardTitle className="mt-3 text-[22px]">
+              <h2 className="mt-3 text-[22px] font-semibold text-foreground">
                 Review your onboarding summary
-              </CardTitle>
+              </h2>
               <CardDescription>
                 Check your details below. You can return to any step to edit
                 your inputs without losing values.
@@ -531,9 +531,9 @@ export function OnboardingFlow() {
               {/* Profile summary */}
               <div className="rounded-[var(--radius-card)] border border-border bg-surface-muted/35 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
-                  <h2 className="text-[15px] font-semibold text-foreground">
+                  <h3 className="text-[15px] font-semibold text-foreground">
                     Candidate profile
-                  </h2>
+                  </h3>
                   <Button
                     variant="tertiary"
                     size="sm"
@@ -577,9 +577,9 @@ export function OnboardingFlow() {
               {/* Preferences summary */}
               <div className="rounded-[var(--radius-card)] border border-border bg-surface-muted/35 p-4">
                 <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
-                  <h2 className="text-[15px] font-semibold text-foreground">
+                  <h3 className="text-[15px] font-semibold text-foreground">
                     Opportunity preferences
-                  </h2>
+                  </h3>
                   <Button
                     variant="tertiary"
                     size="sm"

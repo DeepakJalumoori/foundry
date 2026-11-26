@@ -9,7 +9,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CardTitle,
   Input,
   StatusIndicator,
 } from "@/components/ui";
@@ -184,9 +183,9 @@ export function HeroSection() {
                   <Badge variant="neutral">Illustrative product preview</Badge>
                   <StatusIndicator label="Human review required" tone="warning" />
                 </div>
-                <CardTitle className="mt-2">
+                <h2 className="mt-2 text-[16px] font-semibold text-foreground">
                   How Foundry prepares an introduction
-                </CardTitle>
+                </h2>
               </CardHeader>
 
               <CardContent className="grid gap-4">
