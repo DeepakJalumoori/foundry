@@ -6,6 +6,10 @@ import { StartupDiscoverySection } from "@/components/marketing/startup-discover
 import { ProductPreviewSection } from "@/components/marketing/product-preview-section";
 import { FounderIntelligenceSection } from "@/components/marketing/founder-intelligence-section";
 import { OutreachPreviewSection } from "@/components/marketing/outreach-preview-section";
+import { TrustSection } from "@/components/marketing/trust-section";
+import { UseCasesSection } from "@/components/marketing/use-cases-section";
+import { FaqSection } from "@/components/marketing/faq-section";
+import { FinalCtaFooter } from "@/components/marketing/final-cta-footer";
 
 export default function Home() {
   return (
@@ -19,6 +23,10 @@ export default function Home() {
         <ProductPreviewSection />
         <FounderIntelligenceSection />
         <OutreachPreviewSection />
+        <TrustSection />
+        <UseCasesSection />
+        <FaqSection />
+        <FinalCtaFooter />
       </main>
     </div>
   );
