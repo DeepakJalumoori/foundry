@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { PageContainer, Section } from "@/components/shared/page-container";
 import {
   Badge,
@@ -14,15 +15,14 @@ import {
 } from "@/components/ui";
 
 export function HeroSection() {
+  const router = useRouter();
   const [profileUrl, setProfileUrl] = useState("");
   const [resumeFileName, setResumeFileName] = useState<string | null>(null);
   const [formError, setFormError] = useState<string | undefined>(undefined);
-  const [previewNotice, setPreviewNotice] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     setFormError(undefined);
-    setPreviewNotice(null);
     const file = event.target.files?.[0];
     if (!file) {
       setResumeFileName(null);
@@ -52,16 +52,8 @@ export function HeroSection() {
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setFormError(undefined);
-    setPreviewNotice(null);
 
     const trimmedUrl = profileUrl.trim();
-    if (!trimmedUrl && !resumeFileName) {
-      setFormError(
-        "Enter a LinkedIn or portfolio URL, or choose a PDF resume to preview onboarding."
-      );
-      return;
-    }
-
     if (trimmedUrl) {
       try {
         const parsed = new URL(trimmedUrl);
@@ -75,22 +67,14 @@ export function HeroSection() {
       }
     }
 
-    const sourceSummary = [
-      trimmedUrl ? `URL (${trimmedUrl})` : null,
-      resumeFileName ? `resume (${resumeFileName})` : null,
-    ]
-      .filter(Boolean)
-      .join(" and ");
-
-    setPreviewNotice(
-      `Preview mode: Captured ${sourceSummary} locally. Live resume parsing and startup discovery will connect once onboarding and backend APIs are wired.`
-    );
+    router.push("/onboarding");
   };
 
-  const scrollToPreview = () => {
-    const previewEl = document.getElementById("hero-product-preview");
-    previewEl?.scrollIntoView({ behavior: "smooth", block: "nearest" });
-    previewEl?.focus({ preventScroll: true });
+  const scrollToWorkflow = () => {
+    const target =
+      document.getElementById("how-it-works") ??
+      document.getElementById("hero-product-preview");
+    target?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   return (
@@ -132,10 +116,9 @@ export function HeroSection() {
                   onChange={(event) => {
                     setProfileUrl(event.target.value);
                     setFormError(undefined);
-                    setPreviewNotice(null);
                   }}
                   error={formError}
-                  hint="Or attach a PDF resume below (max 5 MB). Preview input only — nothing is uploaded yet."
+                  hint="Optional here, or attach a PDF resume below (max 5 MB) — continue to the onboarding preview."
                 />
 
                 <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -166,7 +149,7 @@ export function HeroSection() {
                     <Button
                       variant="tertiary"
                       size="md"
-                      onClick={scrollToPreview}
+                      onClick={scrollToWorkflow}
                     >
                       See how it works
                     </Button>
@@ -175,16 +158,6 @@ export function HeroSection() {
                     </Button>
                   </div>
                 </div>
-
-                {previewNotice && (
-                  <div
-                    role="status"
-                    aria-live="polite"
-                    className="rounded-[var(--radius-control)] border border-primary/25 bg-primary-soft px-3.5 py-2.5 text-[13px] text-foreground"
-                  >
-                    {previewNotice}
-                  </div>
-                )}
               </div>
             </form>
 

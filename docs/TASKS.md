@@ -30,7 +30,7 @@
 - [x] **T014** Build startup discovery and product preview sections.
 - [x] **T015** Build founder intelligence and outreach preview sections.
 - [x] **T016** Build trust, use cases, FAQ and final CTA/footer.
-- [ ] **T017** Connect CTAs to actual onboarding routes.
+- [x] **T017** Connect CTAs to actual onboarding routes.
 - [ ] **T018** Verify responsive behavior and production build.
 
 **Exit criteria:** Landing page is complete, truthful and navigable.

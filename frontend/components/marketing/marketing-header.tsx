@@ -20,9 +20,17 @@ export function MarketingHeader() {
           </span>
         </Link>
 
-        <p className="hidden text-[13px] text-muted sm:block">
-          Your next opportunity isn&apos;t always posted.
-        </p>
+        <div className="flex items-center gap-4">
+          <p className="hidden text-[13px] text-muted md:block">
+            Your next opportunity isn&apos;t always posted.
+          </p>
+          <Link
+            href="/onboarding"
+            className="inline-flex h-9 items-center justify-center rounded-[var(--radius-control)] bg-primary px-3.5 text-[13px] font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
+          >
+            Get started
+          </Link>
+        </div>
       </PageContainer>
     </header>
   );

@@ -39,12 +39,12 @@ export function FinalCtaFooter() {
               </p>
 
               <div className="mt-7 flex flex-wrap items-center gap-3">
-                <a
-                  href="#main-content"
+                <Link
+                  href="/onboarding"
                   className="inline-flex h-11 items-center justify-center rounded-[var(--radius-control)] bg-primary px-5 text-[15px] font-medium text-white transition-colors hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
                 >
-                  Try the profile preview
-                </a>
+                  Start onboarding preview
+                </Link>
                 <a
                   href="#how-it-works"
                   className="inline-flex h-11 items-center justify-center rounded-[var(--radius-control)] border border-border bg-surface px-5 text-[15px] font-medium text-foreground transition-colors hover:bg-surface-muted focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2"
