@@ -1,8 +1,8 @@
 # Foundry — Progress Log
 
 **Last updated:** 2026-11-26  
-**Project status:** Phase 2 complete (T011–T018 done; awaiting approval for Phase 3 / T019)  
-**Current phase:** Phase 2 — Marketing landing page
+**Project status:** Phase 3 in progress (T019 complete; awaiting approval for T020)  
+**Current phase:** Phase 3 — Application shell and onboarding
 
 ## 1. Current state
 
@@ -70,10 +70,11 @@ The design direction is a clean, light-first SaaS product inspired by the produc
 - [x] **T016** Built the remaining four landing-page sections mounted below `OutreachPreviewSection` in `app/page.tsx`: `TrustSection` (`#trust`, 6 editorial commitments), `UseCasesSection` (`#use-cases`, 3 candidate scenarios), `FaqSection` (`#faq`, accessible 7-item accordion), and `FinalCtaFooter` (`#get-started` CTA + `<footer>` with Foundry branding and 8 verified internal anchor links). Verified `npm run lint`, `npx tsc --noEmit`, `npm run build`, and Chrome DevTools inspection across `1440x900`, `768x1024`, `390x844`, and `360x800`.
 - [x] **T017** Implemented `/onboarding` (`app/onboarding/page.tsx`, `components/onboarding/onboarding-flow.tsx`) with 4 stateful steps (`Welcome`, `Profile`, `Preferences`, `Review`), client-side validation (required name/email/role/skills, email & URL format, PDF type & 5 MB limit, optional fields), state preservation across steps, and an honest preview-complete notice (no backend submission or localStorage persistence); connected Header `"Get started"`, Hero `"Find my startup matches"`, and Final CTA `"Start onboarding preview"` to `/onboarding` while keeping `"See how it works"` and `"Review the workflow"` linked to `#how-it-works`. Verified `npm run lint`, `npx tsc --noEmit`, `npm run build`, and Chrome DevTools E2E + responsive checks across `1440x900`, `768x1024`, `390x844`, and `360x800`.
 - [x] **T018** Completed full Phase 2 QA across `/` and `/onboarding` at `1440x900`, `1280x800`, `768x1024`, `390x844`, and `360x800`: fixed skipped heading levels on `/` (`hero-section.tsx` preview `h2`) and `/onboarding` (`onboarding-flow.tsx` `sr-only` `h1`, step `h2`s, review `h3`s); verified 0 application console errors, 0 failed network requests, 0 horizontal overflow, working CTAs/anchors, FAQ keyboard/mouse toggle, Outreach Edit/Approve/Reject/Reset, Onboarding validation/persistence, and passing `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
+- [x] **T019** Built the shared Foundry application shell (`components/app/app-shell.tsx`, `nav-config.ts`, `nav-icons.tsx`, `app-placeholder-page.tsx`) and `/app` layout + all 7 routes (`/app`, `/app/discover`, `/app/matches`, `/app/contacts`, `/app/outreach`, `/app/profile`, `/app/settings`): persistent desktop sidebar (`lg+`), sticky header with active route context and honest `"Demo Candidate"` placeholder, accessible mobile/tablet drawer (`role="dialog"`, `Tab` focus trap, `Escape` close, scroll lock, focus restoration, auto-close on navigation), and `aria-current="page"` active highlighting. Verified `npx next typegen`, `npm run lint`, `npx tsc --noEmit`, `npm run build`, and Chrome DevTools inspection across all 7 routes and 5 viewports.
 
 ## 4. Current task
 
-**T018 complete (Phase 2 exit criteria met).** Awaiting user approval before starting **T019** (Build application layout and responsive navigation).
+**T019 complete.** Awaiting user approval before starting **T020** (Build profile input and resume upload UI).
 
 ## 5. Known risks, runtime compatibility, and open questions
 
@@ -142,7 +143,7 @@ Foundry/
 
 ### Immediate next task
 
-- **T019** — _Build application layout and responsive navigation_ (Phase 3 — Application shell and onboarding; waiting for user approval).
+- **T020** — _Build profile input and resume upload UI_ (Phase 3 — Application shell and onboarding; waiting for user approval).
 
 ## 9. Update format
 
@@ -328,4 +329,15 @@ Checks run: npm run lint; npx tsc --noEmit; npm run build; full Chrome DevTools 
 Results: ESLint passed (0 errors), tsc passed (0 errors), Next.js build compiled in 1583ms and prerendered /, /_not-found, and /onboarding. Browser QA confirmed 0 application console errors, 0 failed network requests, 0 horizontal overflow across all 5 viewports, working CTAs/anchors/FAQ/Outreach/Onboarding flows, and fixed heading hierarchy on / and /onboarding (h1 -> h2 -> h3).
 Known issues: Frontend-only preview until backend APIs (Phases 4-9) are connected; /onboarding uses MarketingHeader without a footer landmark.
 Next task: T019 (Build application layout and responsive navigation) — awaiting user approval.
+```
+
+```text
+Date: 2026-11-26
+Task ID: T019
+Status: Done
+Files changed: Foundry/frontend/components/app/{app-shell,nav-config,nav-icons,app-placeholder-page}.tsx(ts), Foundry/frontend/app/app/{layout,page}.tsx, Foundry/frontend/app/app/{discover,matches,contacts,outreach,profile,settings}/page.tsx, Foundry/docs/TASKS.md, Foundry/docs/PROGRESS.md
+Checks run: npx next typegen; npm run lint; npx tsc --noEmit; npm run build; Chrome DevTools inspection of /app and all 7 routes across 1440x900, 1280x800, 768x1024, 390x844, 360x800
+Results: Lint, typecheck, and build passed (all 10 app routes prerendered). Browser inspection confirmed 0 console errors/warnings, 0 failed network requests, 0 horizontal overflow across all 5 viewports, aria-current="page" active highlighting on all 7 routes, and working mobile/tablet drawer (focus trap, Escape close, scroll lock, focus restoration, auto-close on navigation).
+Known issues: App routes display frontend layout placeholders until Phase 3-9 feature/backend tasks are implemented.
+Next task: T020 (Build profile input and resume upload UI) — awaiting user approval.
 ```

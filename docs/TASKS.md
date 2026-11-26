@@ -37,7 +37,7 @@
 
 ## Phase 3 — Application shell and onboarding
 
-- [ ] **T019** Build application layout and responsive navigation.
+- [x] **T019** Build application layout and responsive navigation.
 - [ ] **T020** Build profile input and resume upload UI.
 - [ ] **T021** Build candidate profile review/edit screen.
 - [ ] **T022** Build candidate preference form.
