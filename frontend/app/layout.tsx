@@ -14,11 +14,11 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: {
-    default: "Foundry — Your next opportunity isn't always posted.",
+    default: "Foundry — AI Job Search Agent",
     template: "%s | Foundry",
   },
   description:
-    "Foundry helps candidates discover relevant early-stage startups, research the people behind them, and prepare thoughtful, human-approved introductions.",
+    "Minimal AI-powered job search agent for candidates targeting pre-seed to Series C startups.",
 };
 
 export default function RootLayout({

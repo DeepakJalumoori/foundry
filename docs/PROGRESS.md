@@ -1,25 +1,25 @@
 # Foundry — Progress Log
 
-**Last updated:** 2026-11-26 | **Project status:** Final scope frozen; ready for **M1** (Minimal interface and candidate input)
+**Last updated:** 2026-11-26 | **Project status:** **M1 complete** (minimal frontend demo interface); ready for **M2** (Backend foundation and persistence)
 
 ---
 
 ## 1. Repository state breakdown (verified)
 
-### A. Existing committed code (`d250128` through `9c52011`)
+### A. Existing committed code (`d250128` through `6dea8c5`)
 - **Frontend (`Foundry/frontend/`):**
   - Next.js `16.4.6` (App Router), React `19.3.0`, TypeScript, Tailwind CSS `4.3.3`, ESLint `9`.
-  - Reusable UI primitives in `frontend/components/ui/` (`Button`, `Input`, `Textarea`, `Card`, `Badge`, `Dialog`, `ConfirmDialog`, `StatusIndicator`, `Skeleton`, `EmptyState`, `ErrorState`).
+  - Reusable UI primitives in `frontend/components/ui/` (`Button`, `Input`, `Textarea`, `Card`, `Badge`, `Dialog`, `ConfirmDialog`, `StatusIndicator`, `Skeleton`, `EmptyState`, `ErrorState`) and layout container (`frontend/components/shared/page-container.tsx`).
   - Design tokens and typography (`Geist` / `Geist Mono`) in `frontend/app/globals.css` and `frontend/app/layout.tsx`.
-  - Pre-reset multi-section SaaS marketing landing page (`frontend/app/page.tsx`, `frontend/components/marketing/*`) and `/onboarding` flow (`frontend/app/onboarding/page.tsx`).
-  - Application shell (`frontend/components/app/app-shell.tsx`) and 7 placeholder routes (`/app`, `/app/discover`, `/app/matches`, `/app/contacts`, `/app/outreach`, `/app/profile`, `/app/settings`).
-  - **Scope note:** `/onboarding`, `/app/matches`, `/app/contacts`, `/app/settings`, the marketing landing page, and separate multi-destination workspaces are outside the final frozen scope and are scheduled for removal or redirection during **M1**.
 
-### B. Uncommitted T020 work (preserved in working tree)
-- `frontend/app/app/profile/page.tsx` (modified)
-- `frontend/components/app/profile/` (`profile-types.ts`, `profile-workspace.tsx`, `resume-upload-card.tsx`, `skills-editor.tsx` — untracked)
-- **Status:** Preserved untouched as an in-memory UI preview (client-side form, skills editor, and PDF file validation; no backend persistence or parsing).
-- **M1 plan:** Inspect these files during **M1** to reuse useful resume/profile input components, simplify unnecessary profile-management UI, and avoid maintaining a separate profile workspace.
+### B. M1 changes (uncommitted in working tree)
+- **Minimal 4-state agent interface (`frontend/components/agent/` + `frontend/app/page.tsx`):**
+  - `SignInCard`: Minimal frontend-only demo sign-in (real authentication deferred to M2).
+  - `CandidateInputCard`: Accepts either a LinkedIn profile URL or a PDF resume (reusing T020's `ResumeUploadCard`, `isValidHttpUrl`, and `formatFileSize` validation). No backend upload or LinkedIn scraping is performed.
+  - `ProcessingState`: Concise 4-stage simulated demo progress view.
+  - `ResultsView` + `demo-results.ts`: Clearly labelled fictional/demo startup results showing funding/hiring signals with source links, **Active** vs. **Hidden** classification, founder email provenance/verification status, match score + explanation, and editable/copyable email drafts.
+- **Removed out-of-scope UI:** Removed the 11-section marketing landing page (`components/marketing/*`), `/onboarding`, the 7-route `AppShell` (`/app/*`), `component-showcase.tsx`, and elaborate T020 profile-management components (`ProfileWorkspace`, `SkillsEditor`, `app/app/profile/page.tsx`), while preserving `ResumeUploadCard` and `profile-types.ts` helpers.
+- **Verified checks:** `npm run lint`, `npx tsc --noEmit`, and `npm run build` all pass (`/` and `/_not-found` prerendered).
 
 ### C. Future work (not yet implemented)
 - **No `backend/` directory** (no FastAPI app, SQLAlchemy models, or SQLite database).
@@ -60,4 +60,4 @@ Foundry is a **simple AI-powered job search agent** for candidates targeting **p
 
 ## 5. Next milestone
 
-- **M1 — Minimal interface and candidate input:** Audit/remove out-of-scope routes, inspect and selectively reuse T020 `ProfileWorkspace` input components, and build the minimal 4-state UI.
+- **M2 — Backend foundation and persistence:** Scaffold `Foundry/backend/` using Python 3.12 or 3.13, FastAPI, Pydantic v2, SQLAlchemy + SQLite, minimal `/api/auth/login`, `/api/health`, and `pytest` suite.
