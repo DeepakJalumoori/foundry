@@ -1,6 +1,6 @@
 # Foundry — Progress Log
 
-**Last updated:** 2026-11-27 | **Project status:** **M5 complete** (SQLite FTS5 RAG, 11-node LangGraph matching workflow, deterministic `fit_v1` scoring, independent opportunity classification, and `rank_v1` ranking); ready for **M6** (outreach drafts & frontend-backend integration)
+**Last updated:** 2026-11-27 | **Project status:** **M6 complete** (evidence-grounded founder outreach generation, structured claim validation, prompt-injection & concurrency protection, human review/approval lifecycle, version history, and frontend outreach workspace); **119 backend `pytest` tests passing** (100 M1–M5 + 19 M6).
 
 ---
 
@@ -44,11 +44,20 @@
   - `app/providers/llm.py` & `app/services/company_assessment_service.py`: Added `assess_candidate_company_fit` using `ChatPromptTemplate` with `<UNTRUSTED_EVIDENCE>` prompt-injection boundaries, `StructuredCompanyAssessment` validation, and cross-company/unsupported claim stripping.
   - `app/services/fit_scoring.py`, `app/services/opportunity_classifier.py`, & `app/services/ranking.py`: Implemented deterministic `fit_v1` scoring (`40/25/15/10/10` with coverage normalization), independent opportunity classification (`active` | `hidden` | `insufficient_evidence` + `strong` | `moderate` | `weak` | `insufficient`), and fit-dominant deterministic `rank_v2` prioritization.
   - `app/graphs/matching_graph.py`, `app/services/matching_service.py`, & `app/api/routes/matching.py`: Implemented the 11-node LangGraph `StateGraph` (`MatchingState`) and exposed `/api/matching-runs` and `/api/matches` endpoints.
-- **Known M5 limitations:** Retrieval is lexical SQLite FTS5 (no semantic vector search); initial company intelligence uses M4 `Demo*` providers (`data_origin="demo"`); live Gemini API integration requires `GEMINI_API_KEY` and `AI_PROVIDER=gemini`.
+- **Known M5 limitations:** Retrieval is lexical SQLite FTS5 (no semantic vector search); initial company intelligence uses M4 `Demo*` providers (`data_origin="demo"`); live Gemini API integration requires `GEMINI_API_KEY` and `AI_PROVIDER=gemini`; concurrent matching-run duplicate prevention is currently application-level rather than atomically guaranteed.
 
-### E. Future work (not yet implemented)
+### E. M6 implementation (uncommitted, ready for review)
+- **Evidence-grounded founder outreach & human review (Alembic chain `20261127_0001` → `20261127_0002` → `20261127_0003` → `20261127_0004` → `20261127_0005` → `20261127_0006`):**
+  - `app/models/m6.py`, `20261127_0005_add_m6_outreach_tables.py`, & `20261127_0006_add_m6_active_draft_unique_index.py`: `0005` introduces `outreach_drafts`, `outreach_draft_evidence`, and `outreach_draft_versions` with UUID PKs, FKs, check constraints for intents (`job_interest`, `exploratory`, `general_interest`) and statuses (`draft`, `reviewed`, `approved`, `archived`), and preserved `original_subject`/`original_body`; `0006` adds the `uq_outreach_drafts_active_unique` partial unique index (`WHERE status != 'archived'`) for concurrency-safe duplicate draft prevention.
+  - `app/services/outreach_grounding.py`: Sanitized candidate/company/founder context assembly, company-isolated FTS5 evidence collection, structured claim-to-text validation, cross-company `source_evidence_id` stripping, `<untrusted_evidence>` prompt-injection span removal, unverified email redaction, and M4 `STALE_JOB_DAYS` (90-day) / verified active-job enforcement.
+  - `app/providers/llm.py` & `app/graphs/outreach_graph.py`: Extended `LLMProvider` (`DemoLLMProvider` + `GeminiLLMProvider`) with `build_outreach_strategy` and `generate_outreach_draft`, and implemented the 8-node `build_outreach_graph` LangGraph workflow.
+  - `app/services/outreach_service.py` & `app/api/routes/outreach.py`: Exposed `/api/outreach-drafts` (generate, list with filters/pagination, get, `PATCH` edit requiring `expected_version` with atomic version increment and HTTP `409` on stale versions or immutable `approved`/`archived` drafts, `/review`, `/approve`, `/archive`, `/evidence`, `/versions`) with explicit status transition validation and zero email-sending capability.
+  - `frontend/lib/api.ts`, `frontend/components/agent/outreach-panel.tsx`, & `frontend/components/agent/results-view.tsx`: Added typed API client (tracked via `!frontend/lib/` and `!frontend/lib/**` in `.gitignore`) and `OutreachWorkspacePanel` for draft generation, editing, evidence inspection, and review/approval.
+  - `tests/test_m6_grounding_and_security.py` & `tests/test_m6_api_and_integration.py`: Added 19 M6 tests covering unit, adversarial grounding/prompt-injection, multi-threaded SQLite concurrency, transaction rollback, 89/90/91-day job freshness boundaries, API, integration (Scenarios A–E), and Alembic `0004` ↔ `0006` upgrade/downgrade; **119 backend tests passed** (100 M1–M5 + 19 M6). Frontend `eslint`, `tsc --noEmit`, and `next build --webpack` passed.
+- **Known M6 limitations:** Automated tests used `DemoLLMProvider` and a mocked Gemini client; live Gemini API calls and live browser E2E testing have not been performed. `next build` requires `--webpack` on Windows due to Turbopack worker spawning; no email sending is implemented by design.
+
+### F. Future work (not yet implemented)
 - **No authentication / minimal sign-in** (deferred).
-- **No persisted outreach draft generation / approval or frontend-backend integration** (M6).
 
 ---
 

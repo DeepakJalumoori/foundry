@@ -18,6 +18,11 @@ from app.models.m5 import (
     MatchResult,
     RetrievalRecord,
 )
+from app.models.m6 import (
+    OutreachDraft,
+    OutreachDraftEvidence,
+    OutreachDraftVersion,
+)
 from app.models.research_run import ResearchRun
 
 __all__ = [
@@ -35,6 +40,9 @@ __all__ = [
     "JobOpportunity",
     "MatchingRun",
     "MatchResult",
+    "OutreachDraft",
+    "OutreachDraftEvidence",
+    "OutreachDraftVersion",
     "ResearchRun",
     "RetrievalRecord",
     "SourceEvidence",

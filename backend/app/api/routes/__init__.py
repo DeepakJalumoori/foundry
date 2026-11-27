@@ -3,6 +3,7 @@ from app.api.routes.companies import router as companies_router
 from app.api.routes.discovery import router as discovery_router
 from app.api.routes.health import router as health_router
 from app.api.routes.matching import router as matching_router
+from app.api.routes.outreach import router as outreach_router
 from app.api.routes.runs import router as runs_router
 
 __all__ = [
@@ -11,5 +12,6 @@ __all__ = [
     "discovery_router",
     "health_router",
     "matching_router",
+    "outreach_router",
     "runs_router",
 ]

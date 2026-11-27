@@ -8,6 +8,7 @@ from app.api.routes import (
     discovery_router,
     health_router,
     matching_router,
+    outreach_router,
     runs_router,
 )
 from app.core.config import get_settings
@@ -29,6 +30,12 @@ from app.services.matching_service import (
     MatchingValidationError,
     MatchResultNotFoundError,
 )
+from app.services.outreach_service import (
+    OutreachConflictError,
+    OutreachDraftNotFoundError,
+    OutreachExecutionError,
+    OutreachValidationError,
+)
 from app.services.resume_extractor import ResumeExtractionError
 from app.services.run_service import InputValidationError, RunNotFoundError
 
@@ -46,7 +53,7 @@ def create_app() -> FastAPI:
         CORSMiddleware,
         allow_origins=settings.cors_origins_list,
         allow_credentials=False,
-        allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allow_headers=["*"],
     )
 
@@ -196,12 +203,53 @@ def create_app() -> FastAPI:
             content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
         )
 
+    @app.exception_handler(OutreachDraftNotFoundError)
+    async def _handle_outreach_not_found(
+        _request: Request,
+        exc: OutreachDraftNotFoundError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
+    @app.exception_handler(OutreachValidationError)
+    async def _handle_outreach_validation(
+        _request: Request,
+        exc: OutreachValidationError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
+    @app.exception_handler(OutreachConflictError)
+    async def _handle_outreach_conflict(
+        _request: Request,
+        exc: OutreachConflictError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
+    @app.exception_handler(OutreachExecutionError)
+    async def _handle_outreach_execution(
+        _request: Request,
+        exc: OutreachExecutionError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
     app.include_router(health_router, prefix="/api")
     app.include_router(runs_router, prefix="/api")
     app.include_router(candidates_router, prefix="/api")
     app.include_router(discovery_router, prefix="/api")
     app.include_router(companies_router, prefix="/api")
     app.include_router(matching_router, prefix="/api")
+    app.include_router(outreach_router, prefix="/api")
 
     return app
 

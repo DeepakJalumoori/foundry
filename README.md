@@ -55,16 +55,15 @@ candidate_input
 
 ## Current development status
 
-Foundry has completed **M1 (minimal frontend)**, **M2 (backend foundation)**, **M3 (candidate intelligence)**, **M4 (startup discovery & intelligence)**, and **M5 (RAG + LangGraph + explainable matching)**:
+Foundry has completed **M1 (minimal frontend)**, **M2 (backend foundation)**, **M3 (candidate intelligence)**, **M4 (startup discovery & intelligence)**, **M5 (RAG + LangGraph + explainable matching)**, and **M6 (evidence-grounded founder outreach & human review)**:
 
 - **Implemented:**
-  - Minimal 4-state Next.js frontend (`frontend/components/agent/`, `frontend/components/ui/`).
-  - FastAPI + SQLAlchemy 2.x + SQLite + Alembic backend (`Foundry/backend/`) with M2–M5 endpoints (`/api/health`, `/api/runs`, `/api/candidates/{id}/profile`, `/api/discovery`, `/api/companies`, `/api/matching-runs`, `/api/matches`).
+  - Minimal 4-state Next.js frontend (`frontend/components/agent/`, `frontend/components/ui/`, `frontend/lib/api.ts`) with M6 backend-connected `OutreachWorkspacePanel` for draft generation, editing, evidence inspection, and review/approval (no auto-send).
+  - FastAPI + SQLAlchemy 2.x + SQLite + Alembic backend (`Foundry/backend/`) with M2–M6 endpoints (`/api/health`, `/api/runs`, `/api/candidates/{id}/profile`, `/api/discovery`, `/api/companies`, `/api/matching-runs`, `/api/matches`, `/api/outreach-drafts`).
   - PyMuPDF PDF text extraction, structured `CandidateProfile` schema + evidence validation, `LLMProvider` abstraction (`DemoLLMProvider` and `GeminiLLMProvider`).
   - M4 startup discovery, domain-based company deduplication, company research with conflict detection, funding intelligence, explainable hiring signal detection (**Active** vs. **Hidden**), founder discovery, and shared `source_evidence` provenance (`alembic` revision `20261127_0003`, deterministic `Demo*` providers).
   - M5 local **SQLite FTS5** lexical RAG (`evidence_documents` + `evidence_documents_fts`, `SQLiteFTSRetriever` + LangChain `FoundryLangChainRetriever`), 11-node **LangGraph** `StateGraph` (`build_matching_graph`), deterministic candidate-fit scoring (`fit_v1`: `40/25/15/10/10` with coverage normalization), independent opportunity classification (`active` / `hidden` / `insufficient_evidence` + evidence strength), deterministic ranking (`rank_v1`), and M5 persistence (`alembic` revision `20261127_0004`).
-- **Not yet implemented (M6):**
-  - Outreach draft generation, approval persistence, and frontend-backend integration (**M6**).
+  - M6 8-node **LangGraph** outreach workflow (`build_outreach_graph`), structured claim-level evidence grounding & prompt-injection/factual-claim validation (`outreach_grounding.py`), three outreach intents (`job_interest`, `exploratory`, `general_interest`), `OutreachDraft` / `OutreachDraftEvidence` / `OutreachDraftVersion` persistence (`alembic` chain `20261127_0001` → `20261127_0005` outreach tables → `20261127_0006` active-draft partial unique index), `expected_version` optimistic concurrency on `PATCH /api/outreach-drafts/{draft_id}`, and explicit `draft` → `reviewed` → `approved` → `archived` lifecycle (no email sending). Automated backend suite: **119 passed** (100 M1–M5 + 19 M6 tests; live Gemini and browser E2E not performed).
 
 See [`docs/PRD.md`](docs/PRD.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/TASKS.md`](docs/TASKS.md), and [`docs/PROGRESS.md`](docs/PROGRESS.md) for full details.
 

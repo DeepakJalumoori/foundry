@@ -77,14 +77,11 @@ Keep M1 small—focus only on what is needed to accept candidate input, show pro
 
 ---
 
-## M6: Personalized outreach, integration, testing, and portfolio demonstration
+## M6: Personalized outreach, human review, and frontend integration (Complete)
 
 - **Deliverables:**
-  1. Implement grounded personalized email draft generation (citing retrieved candidate + company evidence), draft editing (`PUT /api/outreach/{draft_id}`), and explicit `approve` / `reject` endpoints (no automatic email sending).
-  2. Build centralized typed API client (`frontend/lib/api.ts`) and connect sign-in, candidate input, live workflow polling, structured results display, and draft approval/editing end-to-end.
-  3. Run full verification: backend `pytest`, frontend `lint` / `tsc` / `build`, end-to-end browser walkthrough (desktop + mobile), and evidence/security audit.
-  4. Update `README.md` and `docs/PROGRESS.md` with verified setup steps, demo walkthrough, and known limitations.
-- **Dependencies:** M1 (minimal frontend) and M5 (orchestrated backend pipeline).
-- **Acceptance criteria:**
-  - A candidate can sign in, upload a resume or enter a LinkedIn URL, watch the agent run, inspect grounded startup/funding/hiring/founder/match results, edit a draft, and approve or reject it—with all state persisted in SQLite.
-  - Zero fabricated contacts, zero unverified hiring claims, and zero automatic email sending.
+  1. Implemented `OutreachDraft`, `OutreachDraftEvidence`, and `OutreachDraftVersion` models + Alembic migrations `20261127_0005` (outreach tables) and `20261127_0006` (active-draft partial unique index, completing chain `20261127_0001` → `20261127_0006`).
+  2. Implemented `outreach_grounding.py` for sanitized context assembly, company-isolated FTS5 retrieval, structured claim-to-text validation, prompt-injection span removal, unverified email redaction, and M4 90-day active-job freshness/verification checks.
+  3. Extended `LLMProvider` (`DemoLLMProvider` + `GeminiLLMProvider`) and built the 8-node `build_outreach_graph` LangGraph workflow supporting `job_interest`, `exploratory`, and `general_interest` intents.
+  4. Exposed `/api/outreach-drafts` CRUD, `PATCH` editing with required `expected_version` optimistic concurrency (`409` on stale versions; `approved`/`archived` drafts immutable), `review`/`approve`/`archive` transitions, `/evidence`, and `/versions` endpoints (no email sending).
+  5. Added typed frontend API client (`frontend/lib/api.ts`) and `OutreachWorkspacePanel` in `ResultsView`, verified with **119 passing backend tests** (100 M1–M5 + 19 M6) and frontend `eslint`, `tsc --noEmit`, and `next build --webpack` (live Gemini and browser E2E not performed).

@@ -17,6 +17,7 @@ import type {
   EmailVerificationStatus,
 } from "@/components/agent/types";
 import type { CandidateRunInput } from "@/components/agent/candidate-input-card";
+import { OutreachWorkspacePanel } from "@/components/agent/outreach-panel";
 
 interface ResultsViewProps {
   input: CandidateRunInput;
@@ -249,6 +250,8 @@ export function ResultsView({
           New search
         </Button>
       </div>
+
+      <OutreachWorkspacePanel />
 
       <div className="grid gap-6">
         {results.map((result) => (
