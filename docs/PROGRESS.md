@@ -1,6 +1,6 @@
 # Foundry — Progress Log
 
-**Last updated:** 2026-11-27 | **Project status:** **M4 complete** (startup discovery, research, funding, hiring signals & founder discovery); ready for **M5** (SQLite/BM25 RAG, LangGraph orchestration & deterministic matching)
+**Last updated:** 2026-11-27 | **Project status:** **M5 complete** (SQLite FTS5 RAG, 11-node LangGraph matching workflow, deterministic `fit_v1` scoring, independent opportunity classification, and `rank_v1` ranking); ready for **M6** (outreach drafts & frontend-backend integration)
 
 ---
 
@@ -37,10 +37,18 @@
   - `tests/`: Added `test_m4_discovery_and_research.py`, `test_m4_signals_and_founders.py`, and `test_m4_api_and_migration.py` (80 total passing tests across M2–M4).
 - **Known M4 limitations:** Only deterministic `Demo*` providers are implemented; real external discovery/funding/job/founder APIs require configuring and implementing concrete adapters.
 
-### D. Future work (not yet implemented)
+### D. M5 implementation (`Foundry/backend/`)
+- **RAG, LangGraph & Explainable Matching (`alembic` revision `20261127_0004`):**
+  - `app/models/m5.py` & `alembic/versions/20261127_0004_add_m5_matching_tables.py`: Added `evidence_documents`, `evidence_documents_fts` (SQLite FTS5 virtual table), `matching_runs`, `company_assessments`, `match_results`, and `retrieval_records`.
+  - `app/services/evidence_documents.py` & `app/services/fts_retriever.py`: Implemented `EvidenceDocumentNormalizer` (normalizing M4 records while preserving `source_evidence_id` provenance and SHA-256 `content_hash`), application-managed FTS5 index synchronization (`sync_fts_upsert`, `sync_fts_delete`, `rebuild_fts_index`), `SQLiteFTSRetriever` (lexical FTS5 BM25 retrieval with company isolation and metadata filters), and `FoundryLangChainRetriever` (`BaseRetriever` adapter).
+  - `app/providers/llm.py` & `app/services/company_assessment_service.py`: Added `assess_candidate_company_fit` using `ChatPromptTemplate` with `<UNTRUSTED_EVIDENCE>` prompt-injection boundaries, `StructuredCompanyAssessment` validation, and cross-company/unsupported claim stripping.
+  - `app/services/fit_scoring.py`, `app/services/opportunity_classifier.py`, & `app/services/ranking.py`: Implemented deterministic `fit_v1` scoring (`40/25/15/10/10` with coverage normalization), independent opportunity classification (`active` | `hidden` | `insufficient_evidence` + `strong` | `moderate` | `weak` | `insufficient`), and fit-dominant deterministic `rank_v2` prioritization.
+  - `app/graphs/matching_graph.py`, `app/services/matching_service.py`, & `app/api/routes/matching.py`: Implemented the 11-node LangGraph `StateGraph` (`MatchingState`) and exposed `/api/matching-runs` and `/api/matches` endpoints.
+- **Known M5 limitations:** Retrieval is lexical SQLite FTS5 (no semantic vector search); initial company intelligence uses M4 `Demo*` providers (`data_origin="demo"`); live Gemini API integration requires `GEMINI_API_KEY` and `AI_PROVIDER=gemini`.
+
+### E. Future work (not yet implemented)
 - **No authentication / minimal sign-in** (deferred).
-- **No local RAG** (SQLite/BM25) or **LangGraph** orchestration (M5).
-- **No deterministic matching** or **persisted outreach draft approval** (M5–M6).
+- **No persisted outreach draft generation / approval or frontend-backend integration** (M6).
 
 ---
 

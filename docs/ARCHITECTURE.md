@@ -136,9 +136,16 @@ Define abstract interfaces (`Protocol` or `ABC`) before concrete implementations
 Defer choosing a live search/research vendor until M4 requirements are evaluated. All demo outputs must be explicitly labelled `demo`.
 
 ### RAG implementation
-- Start with **SQLite/BM25** full-text indexing over candidate chunks (skills, experience, projects) and company chunks (description, funding signals, hiring signals) with source metadata.
-- Evaluate retrieval quality in M5; add embeddings only if evaluation shows BM25 is insufficient.
-- No external vector database or unnecessary infrastructure.
+- Uses **SQLite FTS5** (`evidence_documents` + `evidence_documents_fts`, `tokenize='unicode61'`) for lexical full-text retrieval over normalized M4 company intelligence (`Company`, `CompanyResearch`, `FundingEvent`, `HiringSignal`, `JobOpportunity`, `Founder`) with full `SourceEvidence` provenance.
+- Synchronized via application-managed upserts/deletes and idempotent `rebuild_fts_index`.
+- Accessed through the replaceable `EvidenceRetriever` interface (`SQLiteFTSRetriever`) and LangChain `FoundryLangChainRetriever` adapter.
+- Retrieval is lexical FTS5, not semantic vector search; no external vector database is used.
+
+### M5 Matching & Opportunity Classification
+- **Candidate-company fit (`fit_v1`):** Pure Python deterministic scoring across 5 weighted dimensions (`40` technical skills, `25` relevant experience, `15` project/domain, `10` industry/product, `10` role/seniority) with `fit_coverage` normalization for missing data.
+- **Opportunity evidence:** Classified independently from fit into `active`, `hidden`, or `insufficient_evidence` with `evidence_strength` (`strong`, `moderate`, `weak`, `insufficient`). Funding alone never proves hiring.
+- **Ranking (`rank_v2`):** Fit-dominant deterministic prioritization (`70%` fit * coverage + `10%` coverage; `12%` opportunity tier + `8%` evidence strength as secondary signals; `-4` manual-review penalty).
+- **Endpoints:** `POST /api/matching-runs`, `GET /api/matching-runs/{run_id}`, `GET /api/matching-runs/{run_id}/results`, `GET /api/matches/{match_id}`, `GET /api/matches/{match_id}/evidence`.
 
 ---
 

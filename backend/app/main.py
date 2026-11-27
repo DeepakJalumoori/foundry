@@ -7,6 +7,7 @@ from app.api.routes import (
     companies_router,
     discovery_router,
     health_router,
+    matching_router,
     runs_router,
 )
 from app.core.config import get_settings
@@ -21,6 +22,13 @@ from app.services.candidate_profile_service import (
 )
 from app.services.discovery_orchestrator import CompanyNotFoundError, DiscoveryRunNotFoundError
 from app.services.file_storage import ResumeValidationError
+from app.services.matching_service import (
+    MatchingConflictError,
+    MatchingExecutionError,
+    MatchingRunNotFoundError,
+    MatchingValidationError,
+    MatchResultNotFoundError,
+)
 from app.services.resume_extractor import ResumeExtractionError
 from app.services.run_service import InputValidationError, RunNotFoundError
 
@@ -138,11 +146,62 @@ def create_app() -> FastAPI:
             content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
         )
 
+    @app.exception_handler(MatchingRunNotFoundError)
+    async def _handle_matching_run_not_found(
+        _request: Request,
+        exc: MatchingRunNotFoundError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
+    @app.exception_handler(MatchResultNotFoundError)
+    async def _handle_match_result_not_found(
+        _request: Request,
+        exc: MatchResultNotFoundError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
+    @app.exception_handler(MatchingValidationError)
+    async def _handle_matching_validation(
+        _request: Request,
+        exc: MatchingValidationError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
+    @app.exception_handler(MatchingConflictError)
+    async def _handle_matching_conflict(
+        _request: Request,
+        exc: MatchingConflictError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
+    @app.exception_handler(MatchingExecutionError)
+    async def _handle_matching_execution(
+        _request: Request,
+        exc: MatchingExecutionError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
     app.include_router(health_router, prefix="/api")
     app.include_router(runs_router, prefix="/api")
     app.include_router(candidates_router, prefix="/api")
     app.include_router(discovery_router, prefix="/api")
     app.include_router(companies_router, prefix="/api")
+    app.include_router(matching_router, prefix="/api")
 
     return app
 

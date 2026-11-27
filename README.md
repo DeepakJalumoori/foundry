@@ -55,15 +55,15 @@ candidate_input
 
 ## Current development status
 
-Foundry has completed **M1 (minimal frontend)**, **M2 (backend foundation)**, **M3 (candidate intelligence)**, and **M4 (startup discovery & intelligence)**:
+Foundry has completed **M1 (minimal frontend)**, **M2 (backend foundation)**, **M3 (candidate intelligence)**, **M4 (startup discovery & intelligence)**, and **M5 (RAG + LangGraph + explainable matching)**:
 
 - **Implemented:**
   - Minimal 4-state Next.js frontend (`frontend/components/agent/`, `frontend/components/ui/`).
-  - FastAPI + SQLAlchemy 2.x + SQLite + Alembic backend (`Foundry/backend/`) with M2–M4 endpoints (`/api/health`, `/api/runs`, `/api/candidates/{id}/profile`, `/api/discovery`, `/api/companies`).
+  - FastAPI + SQLAlchemy 2.x + SQLite + Alembic backend (`Foundry/backend/`) with M2–M5 endpoints (`/api/health`, `/api/runs`, `/api/candidates/{id}/profile`, `/api/discovery`, `/api/companies`, `/api/matching-runs`, `/api/matches`).
   - PyMuPDF PDF text extraction, structured `CandidateProfile` schema + evidence validation, `LLMProvider` abstraction (`DemoLLMProvider` and `GeminiLLMProvider`).
   - M4 startup discovery, domain-based company deduplication, company research with conflict detection, funding intelligence, explainable hiring signal detection (**Active** vs. **Hidden**), founder discovery, and shared `source_evidence` provenance (`alembic` revision `20261127_0003`, deterministic `Demo*` providers).
-- **Not yet implemented (M5–M6):**
-  - SQLite/BM25 RAG, 11-node LangGraph workflow, and deterministic matching (**M5**).
+  - M5 local **SQLite FTS5** lexical RAG (`evidence_documents` + `evidence_documents_fts`, `SQLiteFTSRetriever` + LangChain `FoundryLangChainRetriever`), 11-node **LangGraph** `StateGraph` (`build_matching_graph`), deterministic candidate-fit scoring (`fit_v1`: `40/25/15/10/10` with coverage normalization), independent opportunity classification (`active` / `hidden` / `insufficient_evidence` + evidence strength), deterministic ranking (`rank_v1`), and M5 persistence (`alembic` revision `20261127_0004`).
+- **Not yet implemented (M6):**
   - Outreach draft generation, approval persistence, and frontend-backend integration (**M6**).
 
 See [`docs/PRD.md`](docs/PRD.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/TASKS.md`](docs/TASKS.md), and [`docs/PROGRESS.md`](docs/PROGRESS.md) for full details.

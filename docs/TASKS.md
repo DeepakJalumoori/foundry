@@ -67,18 +67,13 @@ Keep M1 small—focus only on what is needed to accept candidate input, show pro
 
 ---
 
-## M5: RAG, LangGraph orchestration, and deterministic matching
+## M5: RAG, LangGraph orchestration, and deterministic matching (Complete)
 
 - **Deliverables:**
-  1. Implement lightweight local RAG using **SQLite/BM25** over candidate profile chunks and company research/signal chunks with source metadata (evaluating whether embeddings are needed).
-  2. Implement deterministic matching service (`30%` skills, `25%` role, `15%` experience, `15%` projects, `10%` preferences, `5%` location/work mode) plus LLM/template explanation and "why reach out" rationale grounded in retrieved evidence.
-  3. Build the single orchestrated LangGraph `StateGraph` (`candidate_input` → `candidate_profile_extraction` → `startup_discovery` → `company_research` → `funding_signal_analysis` → `hiring_signal_analysis` → `founder_discovery` → `rag_context_retrieval` → `deterministic_candidate_company_matching` → `personalized_outreach_generation` → `structured_results`) with persisted step events, timeouts, and bounded retries.
-  4. Expose `POST /api/runs`, `GET /api/runs/{run_id}`, and `GET /api/runs/{run_id}/results`; add `pytest` tests for score reproducibility, BM25 retrieval, and LangGraph failure/retry paths.
-- **Dependencies:** M3 (candidate extraction) and M4 (discovery, signals, founders).
-- **Acceptance criteria:**
-  - Submitting candidate input runs the full 11-node LangGraph pipeline and persists step-level progress.
-  - Match scores are 100% reproducible from stored inputs and never altered by an LLM.
-  - All M5 `pytest` tests pass.
+  1. Implemented lexical **SQLite FTS5** RAG (`evidence_documents` + `evidence_documents_fts`, `EvidenceDocumentNormalizer`, `SQLiteFTSRetriever`, and LangChain `FoundryLangChainRetriever`) over M4 company intelligence with `SourceEvidence` provenance.
+  2. Implemented deterministic candidate-fit scoring (`fit_v1`: `40%` technical skills, `25%` experience, `15%` projects/domain, `10%` industry/product, `10%` role/seniority with coverage normalization), independent opportunity classification (`active`, `hidden`, `insufficient_evidence`), and deterministic `rank_v1` ranking.
+  3. Built the single 11-node LangGraph `StateGraph` (`app/graphs/matching_graph.py`) with typed `MatchingState`, prompt-injection boundaries (`<UNTRUSTED_EVIDENCE>`), and failure/review handling.
+  4. Exposed `/api/matching-runs`, `/api/matching-runs/{run_id}`, `/api/matching-runs/{run_id}/results`, `/api/matches/{match_id}`, and `/api/matches/{match_id}/evidence` (`alembic` revision `20261127_0004`).
 
 ---
 

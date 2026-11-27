@@ -37,6 +37,10 @@ class Settings(BaseSettings):
     provider_timeout_seconds: float = 15.0
     provider_max_retries: int = 1
 
+    matching_scoring_version: str = "fit_v1"
+    matching_ranking_version: str = "rank_v2"
+    retrieval_default_limit: int = 12
+
     @property
     def cors_origins_list(self) -> list[str]:
         origins = [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

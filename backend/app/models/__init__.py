@@ -11,19 +11,31 @@ from app.models.m4 import (
     JobOpportunity,
     SourceEvidence,
 )
+from app.models.m5 import (
+    CompanyAssessment,
+    EvidenceDocument,
+    MatchingRun,
+    MatchResult,
+    RetrievalRecord,
+)
 from app.models.research_run import ResearchRun
 
 __all__ = [
     "Candidate",
     "CandidateProfile",
     "Company",
+    "CompanyAssessment",
     "CompanyResearch",
     "DiscoveryRun",
+    "EvidenceDocument",
     "EvidenceLink",
     "Founder",
     "FundingEvent",
     "HiringSignal",
     "JobOpportunity",
+    "MatchingRun",
+    "MatchResult",
     "ResearchRun",
+    "RetrievalRecord",
     "SourceEvidence",
 ]
