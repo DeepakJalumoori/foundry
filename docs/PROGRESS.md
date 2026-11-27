@@ -1,6 +1,6 @@
 # Foundry — Progress Log
 
-**Last updated:** 2026-11-27 | **Project status:** **M2 complete** (backend foundation & persistence); ready for **M3** (Resume/LinkedIn processing and candidate intelligence)
+**Last updated:** 2026-11-27 | **Project status:** **M3 complete** (candidate intelligence & structured profile extraction); ready for **M4** (startup discovery, signals, and founder discovery)
 
 ---
 
@@ -17,19 +17,19 @@
     - `ProcessingState`: Concise 4-stage simulated demo progress view.
     - `ResultsView` + `demo-results.ts`: Clearly labelled fictional/demo startup results.
 
-### B. M2 implementation (`Foundry/backend/`, uncommitted for review)
+### B. M2 & M3 implementation (`Foundry/backend/`)
 - **Backend foundation (`uv`, Python `3.12.0`, FastAPI, Pydantic v2, SQLAlchemy 2.x, SQLite, Alembic):**
-  - `app/core/config.py` & `app/core/database.py`: Pydantic Settings configuration, CORS for `http://localhost:3000`, SQLite engine with `PRAGMA foreign_keys=ON`.
-  - `app/models/candidate.py` & `app/models/research_run.py`: `Candidate` (`candidates`) and `ResearchRun` (`research_runs`) with check constraints, foreign keys, indexes, and `pending` | `processing` | `completed` | `failed` statuses.
-  - `alembic/` (`alembic.ini`, `env.py`, `20261127_0001_initial_schema.py`): Initial migration creating `candidates` and `research_runs`.
-  - `app/services/file_storage.py` & `app/services/run_service.py`: Local PDF storage under `UPLOAD_DIR` with opaque UUID keys, `.pdf` extension, `application/pdf` MIME check, `%PDF-` magic-byte check, bounded-chunk `5 MB` size enforcement (`413` on oversize), partial-file cleanup on failure, and strict HTTPS `linkedin.com/in/...` + mutual-exclusivity validation (`422`).
-  - `app/api/routes/health.py` & `app/api/routes/runs.py`: `GET /api/health` (`200` / `503`), `POST /api/runs` (`201`), `GET /api/runs/{run_id}` (`200` / `404`).
-  - `tests/`: Isolated `pytest` suite using per-test temporary SQLite databases and temporary upload directories.
-- **Deferred / out of scope in M2:** Authentication (`/api/auth/*`) is deferred (future security requirements remain in `docs/RULES.md`). Resume files are stored locally; PDF text extraction (`PyMuPDF`), LinkedIn processing, and LLM extraction belong to **M3**.
+  - `app/core/config.py` & `app/core/database.py`: Pydantic Settings configuration (including `AI_PROVIDER`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `LLM_TIMEOUT_SECONDS`, `LLM_MAX_RETRIES`, `DEMO_MODE`), CORS for `http://localhost:3000`, SQLite engine with `PRAGMA foreign_keys=ON`.
+  - `app/models/candidate.py`, `app/models/research_run.py`, & `app/models/candidate_profile.py`: `Candidate` (`candidates`), `ResearchRun` (`research_runs`), and `CandidateProfile` (`candidate_profiles`) with check constraints, foreign keys, unique `candidate_id`, and indexes.
+  - `alembic/` (`20261127_0001_initial_schema.py`, `20261127_0002_add_candidate_profiles.py`): Migrations creating `candidates`, `research_runs`, and `candidate_profiles`.
+  - `app/services/file_storage.py`, `app/services/resume_extractor.py`, `app/services/profile_validator.py`, & `app/services/candidate_profile_service.py`: Local PDF storage, PyMuPDF page-numbered text extraction (with path-safety, encrypted/corrupt/empty/image-only detection), evidence grounding, date ordering & skill deduplication, and synchronous extraction orchestration.
+  - `app/providers/llm.py`: `LLMProvider` abstraction with `DemoLLMProvider` (explicitly labelled `demo`) and `GeminiLLMProvider` (`google-genai` structured output, bounded retries/timeouts, safe error handling).
+  - `app/api/routes/`: `GET /api/health`, `POST /api/runs`, `GET /api/runs/{run_id}`, `POST /api/runs/{run_id}/process`, `GET /api/candidates/{candidate_id}/profile`.
+  - `tests/`: Isolated `pytest` suite (67 passing tests across M2 and M3) using per-test temporary SQLite databases, temporary upload directories, and synthetic PDFs.
+- **Known M3 limitations:** Extraction executes synchronously on `POST /api/runs/{run_id}/process` (no background worker/queue); scanned image-only PDFs are marked `requires_manual_review` without OCR; LinkedIn URLs are rejected (`LINKEDIN_EXTRACTION_UNSUPPORTED`) without scraping.
 
 ### C. Future work (not yet implemented)
 - **No authentication / minimal sign-in** (deferred).
-- **No PDF text extraction** (PyMuPDF), LinkedIn input processing, or Gemini extraction (M3).
 - **No startup discovery, company research, funding/hiring signal analysis, or founder discovery** (M4).
 - **No local RAG** (SQLite/BM25) or **LangGraph** orchestration (M5).
 - **No deterministic matching** or **persisted outreach draft approval** (M5–M6).

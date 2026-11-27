@@ -55,17 +55,16 @@ candidate_input
 
 ## Current development status
 
-Foundry is in **early frontend development** following a scope reset to the minimal job search agent:
+Foundry has completed **M1 (minimal frontend)**, **M2 (backend foundation)**, and **M3 (candidate intelligence)**:
 
-- **Currently exists (frontend only):**
-  - Next.js app with design tokens and reusable UI primitives (`frontend/components/ui/`).
-  - Pre-reset landing page, `/onboarding`, and 7-route `/app/*` shell (scheduled to be simplified/removed in **M1**).
-  - Uncommitted T020 `ProfileWorkspace` UI preview in `frontend/components/app/profile/` (preserved for **M1** inspection and reuse of resume/input controls).
-- **Not yet implemented:**
-  - `Foundry/backend/` (FastAPI, SQLite persistence, Pydantic schemas).
-  - Minimal sign-in, PDF/LinkedIn processing, and Gemini extraction.
-  - Startup discovery, company/funding/hiring signal analysis, and founder discovery providers.
-  - SQLite/BM25 RAG, 11-node LangGraph workflow, deterministic matching, and outreach draft approval persistence.
+- **Implemented:**
+  - Minimal 4-state Next.js frontend (`frontend/components/agent/`, `frontend/components/ui/`).
+  - FastAPI + SQLAlchemy 2.x + SQLite + Alembic backend (`Foundry/backend/`) with `GET /api/health`, `POST /api/runs`, `GET /api/runs/{run_id}`, `POST /api/runs/{run_id}/process`, and `GET /api/candidates/{candidate_id}/profile`.
+  - PyMuPDF PDF text extraction (`app/services/resume_extractor.py`), structured `CandidateProfile` schema + evidence validation (`app/services/profile_validator.py`), `LLMProvider` abstraction (`DemoLLMProvider` and `GeminiLLMProvider` via `google-genai`), and `candidate_profiles` persistence (`alembic` revision `20261127_0002`).
+- **Not yet implemented (M4–M6):**
+  - Startup discovery, company/funding/hiring signal analysis, and founder discovery providers (**M4**).
+  - SQLite/BM25 RAG, 11-node LangGraph workflow, and deterministic matching (**M5**).
+  - Outreach draft generation, approval persistence, and frontend-backend integration (**M6**).
 
 See [`docs/PRD.md`](docs/PRD.md), [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), [`docs/TASKS.md`](docs/TASKS.md), and [`docs/PROGRESS.md`](docs/PROGRESS.md) for full details.
 
@@ -103,4 +102,4 @@ cd backend
 uv run pytest
 ```
 
-The FastAPI backend uses SQLite (`foundry.db`) and local resume storage (`UPLOAD_DIR=./uploads`). Copy `backend/.env.example` to `backend/.env` if you need custom local settings.
+The FastAPI backend uses SQLite (`foundry.db`) and local resume storage (`UPLOAD_DIR=./uploads`). By default (`AI_PROVIDER=demo`), candidate profile extraction runs deterministically via `DemoLLMProvider` without requiring a Gemini API key. Copy `backend/.env.example` to `backend/.env` and set `AI_PROVIDER=gemini` with `GEMINI_API_KEY` to use Gemini.

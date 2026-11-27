@@ -8,6 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.core.database import Base
 
 if TYPE_CHECKING:
+    from app.models.candidate_profile import CandidateProfile
     from app.models.research_run import ResearchRun
 
 
@@ -58,5 +59,10 @@ class Candidate(Base):
 
     research_runs: Mapped[list["ResearchRun"]] = relationship(
         back_populates="candidate",
+        cascade="all, delete-orphan",
+    )
+    profile: Mapped["CandidateProfile | None"] = relationship(
+        back_populates="candidate",
+        uselist=False,
         cascade="all, delete-orphan",
     )

@@ -1,6 +1,8 @@
 from functools import lru_cache
 from pathlib import Path
+from typing import Literal
 
+from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -19,6 +21,13 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:3000"
     max_resume_size_mb: int = 5
     upload_dir: Path = Path("./uploads")
+
+    ai_provider: Literal["demo", "gemini"] = "demo"
+    gemini_api_key: str | None = Field(default=None, repr=False)
+    gemini_model: str = "gemini-2.5-flash"
+    llm_timeout_seconds: float = 30.0
+    llm_max_retries: int = 1
+    demo_mode: bool = False
 
     @property
     def cors_origins_list(self) -> list[str]:

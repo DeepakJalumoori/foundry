@@ -5,7 +5,9 @@ from sqlalchemy.orm import Session
 
 from app.core.config import Settings, get_settings
 from app.core.database import get_db
+from app.schemas.candidate_profile import ProcessRunResponse
 from app.schemas.run import ErrorResponse, RunResponse
+from app.services.candidate_profile_service import process_candidate_profile_for_run
 from app.services.run_service import create_research_run, get_research_run, to_run_response
 
 router = APIRouter(prefix="/runs", tags=["runs"])
@@ -48,3 +50,25 @@ def get_run(
     """Retrieve a research run by its identifier."""
     run = get_research_run(db, run_id)
     return to_run_response(run)
+
+
+@router.post(
+    "/{run_id}/process",
+    response_model=ProcessRunResponse,
+    responses={
+        404: {"model": ErrorResponse},
+        409: {"model": ErrorResponse},
+        422: {"model": ErrorResponse},
+        429: {"model": ErrorResponse},
+        502: {"model": ErrorResponse},
+        503: {"model": ErrorResponse},
+        504: {"model": ErrorResponse},
+    },
+)
+def process_run(
+    run_id: str,
+    db: Session = Depends(get_db),
+    settings: Settings = Depends(get_settings),
+) -> ProcessRunResponse:
+    """Extract and persist a structured candidate profile for a resume-based research run."""
+    return process_candidate_profile_for_run(db, settings, run_id)

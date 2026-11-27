@@ -34,6 +34,7 @@ class RunResponse(BaseModel):
     run_id: str
     status: RunStatus
     candidate: CandidateResponse
+    profile_extraction_status: str | None = None
     created_at: datetime
     started_at: datetime | None = None
     completed_at: datetime | None = None

@@ -113,7 +113,8 @@ candidate_input
 ## 5. Domain data model
 
 Core SQLAlchemy entities in SQLite:
-- `Candidate`: Submitted candidate input (`input_source`: `linkedin_url` | `resume_pdf`), validated `linkedin_url`, or resume metadata (`resume_filename`, `resume_content_type`, `resume_size_bytes`, `resume_storage_key`) plus timestamps. (Extracted skills, experience, education, and projects are added in M3.)
+- `Candidate`: Submitted candidate input (`input_source`: `linkedin_url` | `resume_pdf`), validated `linkedin_url`, or resume metadata (`resume_filename`, `resume_content_type`, `resume_size_bytes`, `resume_storage_key`) plus timestamps.
+- `CandidateProfile`: 1:1 with `Candidate` (`candidate_profiles` table, unique `candidate_id` FK). Stores extraction metadata (`extraction_status`: `extracted` | `extracted_with_warnings` | `requires_manual_review` | `failed`, `source_type`, `data_origin`: `real` | `demo`, `provider_name`, `model_name`, `page_count`, `warnings`, `error_code`, `error_message`) and a validated `profile_data` JSON document (`StructuredCandidateProfile` with `basic_info`, `skills`, `work_experience`, `education`, `projects`, `certifications_and_achievements`, `additional_info`, and `evidence`). Stored as a single validated JSON column rather than 6+ normalized child tables to keep SQLite migrations simple and preserve atomic profile updates.
 - `ResearchRun`: Run ID, `candidate_id` FK, status (`pending` | `processing` | `completed` | `failed`), `error_code`/`error_message`, and `created_at`/`started_at`/`completed_at` timestamps. (Step-level LangGraph events and provider mode are added in M5.)
 - `Company`: Name, description, website, funding stage (pre-seed to Series C), opportunity type (`active` | `hidden`), data origin (`demo` | `live`).
 - `CompanySignal`: Company ID, signal category (`company_info` | `funding` | `hiring`), summary, source URL, source date (nullable), and verification status.
@@ -150,9 +151,11 @@ GET    /api/health
 POST   /api/auth/login                  # Minimal single-user sign-in
 GET    /api/auth/session
 
-POST   /api/runs                        # Submit LinkedIn URL or resume PDF & start LangGraph run
-GET    /api/runs/{run_id}               # Poll run status, current node, and step events
-GET    /api/runs/{run_id}/results       # Retrieve structured company, signal, founder, match & draft results
+POST   /api/runs                        # Submit LinkedIn URL or resume PDF & initialize run
+POST   /api/runs/{run_id}/process       # Extract PDF text & generate structured CandidateProfile (M3 synchronous)
+GET    /api/runs/{run_id}               # Poll run status & profile_extraction_status
+GET    /api/candidates/{candidate_id}/profile  # Retrieve structured CandidateProfile & evidence (M3)
+GET    /api/runs/{run_id}/results       # Retrieve structured company, signal, founder, match & draft results (M5–M6)
 
 PUT    /api/outreach/{draft_id}         # Edit draft subject/body
 POST   /api/outreach/{draft_id}/approve # Explicit candidate approval (never auto-sends)

@@ -152,10 +152,12 @@ def to_run_response(run: ResearchRun) -> RunResponse:
     if run.error_code is not None or run.error_message is not None:
         error = RunErrorResponse(code=run.error_code, message=run.error_message)
 
+    profile = run.candidate.profile
     return RunResponse(
         run_id=run.id,
         status=run.status,  # type: ignore[arg-type]
         candidate=CandidateResponse.model_validate(run.candidate),
+        profile_extraction_status=profile.extraction_status if profile is not None else None,
         created_at=run.created_at,
         started_at=run.started_at,
         completed_at=run.completed_at,

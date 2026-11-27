@@ -37,13 +37,13 @@ Keep M1 small—focus only on what is needed to accept candidate input, show pro
 
 ---
 
-## M3: Resume/LinkedIn processing and candidate intelligence
+## M3: Resume/LinkedIn processing and candidate intelligence (Complete)
 
 - **Deliverables:**
-  1. Implement secure PDF upload validation (extension, magic bytes, `MAX_RESUME_SIZE_MB`) and text extraction with PyMuPDF.
-  2. Implement LinkedIn URL input handling (no unauthorized scraping; structured validation + explicit user/demo handling).
-  3. Define `LLMProvider` interface and implement `GeminiLLMProvider` (via LangChain) + deterministic `DemoLLMProvider` fallback to extract skills, experience, education, and projects into `CandidateProfile`.
-  4. Add `pytest` tests for valid/malformed PDFs, LinkedIn URL validation, missing `GEMINI_API_KEY` fallback, and extraction persistence.
+  1. Implemented PyMuPDF text extraction (`app/services/resume_extractor.py`) with path-traversal protection, page-number preservation, whitespace normalization, and scanned/image-only/encrypted/corrupted PDF detection.
+  2. Implemented LinkedIn URL handling in `candidate_profile_service.py`: no unauthorized scraping; marks run `failed` (`LINKEDIN_EXTRACTION_UNSUPPORTED`) without fabricating a profile.
+  3. Defined `LLMProvider` abstraction (`app/providers/llm.py`) with `GeminiLLMProvider` (using `google-genai` structured output) and deterministic `DemoLLMProvider` fallback, plus `profile_validator.py` for date/skill/evidence grounding and `CandidateProfile` persistence (`alembic` revision `20261127_0002`).
+  4. Exposed `POST /api/runs/{run_id}/process` and `GET /api/candidates/{candidate_id}/profile`, and added isolated `pytest` tests across PDF extraction, schema/evidence validation, providers, service, API, and migrations.
 - **Dependencies:** M2 (FastAPI, SQLAlchemy models, Pydantic schemas).
 - **Acceptance criteria:**
   - Uploading a PDF or submitting a LinkedIn URL extracts and persists a structured `CandidateProfile`.
