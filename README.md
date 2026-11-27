@@ -87,6 +87,20 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-### Backend (not yet implemented)
+### Backend (M2 foundation)
 
-The Python FastAPI backend will be scaffolded in **M2** (`Foundry/backend/`) using SQLite (`foundry.db`).
+```bash
+cd backend
+uv sync --python 3.12
+uv run alembic upgrade head
+uv run uvicorn app.main:app --reload
+```
+
+Run the isolated backend test suite:
+
+```bash
+cd backend
+uv run pytest
+```
+
+The FastAPI backend uses SQLite (`foundry.db`) and local resume storage (`UPLOAD_DIR=./uploads`). Copy `backend/.env.example` to `backend/.env` if you need custom local settings.

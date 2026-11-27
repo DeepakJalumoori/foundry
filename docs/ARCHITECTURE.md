@@ -113,8 +113,8 @@ candidate_input
 ## 5. Domain data model
 
 Core SQLAlchemy entities in SQLite:
-- `CandidateProfile`: Extracted skills, experience, education, projects, input source (`resume` | `linkedin_url`), and raw extracted text.
-- `WorkflowRun`: Run ID, status (`queued` | `running` | `completed` | `failed`), current node, step-level events, provider mode (`demo` | `live`), and timestamps.
+- `Candidate`: Submitted candidate input (`input_source`: `linkedin_url` | `resume_pdf`), validated `linkedin_url`, or resume metadata (`resume_filename`, `resume_content_type`, `resume_size_bytes`, `resume_storage_key`) plus timestamps. (Extracted skills, experience, education, and projects are added in M3.)
+- `ResearchRun`: Run ID, `candidate_id` FK, status (`pending` | `processing` | `completed` | `failed`), `error_code`/`error_message`, and `created_at`/`started_at`/`completed_at` timestamps. (Step-level LangGraph events and provider mode are added in M5.)
 - `Company`: Name, description, website, funding stage (pre-seed to Series C), opportunity type (`active` | `hidden`), data origin (`demo` | `live`).
 - `CompanySignal`: Company ID, signal category (`company_info` | `funding` | `hiring`), summary, source URL, source date (nullable), and verification status.
 - `FounderContact`: Company ID, name, role, public professional email (nullable), email provenance/source URL, and verification status (`verified` | `unverified` | `unavailable`).

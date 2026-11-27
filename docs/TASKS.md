@@ -25,14 +25,14 @@ Keep M1 small—focus only on what is needed to accept candidate input, show pro
 ## M2: Backend foundation and persistence
 
 - **Deliverables:**
-  1. Scaffold `Foundry/backend/` using Python 3.12 or 3.13, `pyproject.toml`, `.env.example`, and FastAPI app with CORS, `/api/health`, and minimal single-user `/api/auth/login` + `/api/auth/session`.
-  2. Configure SQLAlchemy + SQLite (`foundry.db`) and implement ORM models (`CandidateProfile`, `WorkflowRun`, `Company`, `CompanySignal`, `FounderContact`, `MatchResult`, `OutreachDraft`).
-  3. Implement Pydantic v2 schemas and repository layer.
-  4. Add `pytest` suite for health, auth, DB initialization, schema validation, and repository CRUD.
+  1. Scaffold `Foundry/backend/` using Python 3.12 (`uv`), `pyproject.toml`, `.env.example`, and FastAPI app with CORS and `GET /api/health` (minimal single-user authentication deferred).
+  2. Configure SQLAlchemy 2.x + SQLite (`foundry.db`) + Alembic migrations and implement initial ORM models (`Candidate`, `ResearchRun` with statuses `pending` | `processing` | `completed` | `failed`).
+  3. Implement Pydantic v2 schemas, repository layer, local PDF file storage (`UPLOAD_DIR`), and `POST /api/runs` + `GET /api/runs/{run_id}` with strict input validation (HTTPS LinkedIn `/in/` URL or validated `.pdf` upload, mutually exclusive).
+  4. Add isolated `pytest` suite for health, input validation, PDF storage/cleanup, run creation/retrieval, constraints, and DB isolation.
 - **Dependencies:** None (can begin immediately after M1 or in parallel).
 - **Acceptance criteria:**
-  - FastAPI starts cleanly on Python 3.12/3.13.
-  - SQLite persists and retrieves all core entities.
+  - FastAPI starts cleanly on Python 3.12 via `uv`.
+  - Alembic upgrades a fresh SQLite database cleanly and persists/retrieves `Candidate` and `ResearchRun`.
   - All M2 `pytest` tests pass.
 
 ---

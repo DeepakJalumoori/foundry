@@ -57,6 +57,10 @@ next-env.d.ts
 *.sqlite
 *.sqlite3
 
+# Uploaded files
+uploads/
+backend/uploads/
+
 # IDEs & OS
 .vscode/
 .idea/
