@@ -505,4 +505,3 @@ def test_i4_gemini_assess_candidate_company_fit_mocked_paths() -> None:
         prov_rl.assess_candidate_company_fit(candidate_profile=cand, company_context=comp, retrieved_evidence=ev)
     assert exc_rl.value.code == "LLM_RATE_LIMITED"
     assert exc_rl.value.status_code == 429
-

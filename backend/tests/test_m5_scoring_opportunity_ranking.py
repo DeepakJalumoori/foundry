@@ -452,4 +452,3 @@ def test_i2_prompt_injection_boundary_and_explanation_validation() -> None:
     assert "Ignore previous instructions" not in cleaned.explanation
     assert cleaned.requires_review is True
     assert len(warnings) >= 3
-
