@@ -152,9 +152,19 @@ POST   /api/auth/login                  # Minimal single-user sign-in
 GET    /api/auth/session
 
 POST   /api/runs                        # Submit LinkedIn URL or resume PDF & initialize run
-POST   /api/runs/{run_id}/process       # Extract PDF text & generate structured CandidateProfile (M3 synchronous)
+POST   /api/runs/{run_id}/process       # Extract PDF text & generate structured CandidateProfile (M3)
 GET    /api/runs/{run_id}               # Poll run status & profile_extraction_status
 GET    /api/candidates/{candidate_id}/profile  # Retrieve structured CandidateProfile & evidence (M3)
+
+POST   /api/discovery                   # Discover & research startups for a candidate (M4)
+GET    /api/discovery/{run_id}          # Retrieve discovery run status & summary (M4)
+GET    /api/companies                   # List discovered companies with pagination & filters (M4)
+GET    /api/companies/{company_id}      # Retrieve normalized company profile & latest research (M4)
+POST   /api/companies/{company_id}/research        # Refresh company intelligence (M4)
+GET    /api/companies/{company_id}/funding         # Retrieve funding events & evidence (M4)
+GET    /api/companies/{company_id}/hiring-signals  # Retrieve hiring signals & job opportunities (M4)
+GET    /api/companies/{company_id}/founders        # Retrieve discovered founders & evidence (M4)
+
 GET    /api/runs/{run_id}/results       # Retrieve structured company, signal, founder, match & draft results (M5–M6)
 
 PUT    /api/outreach/{draft_id}         # Edit draft subject/body

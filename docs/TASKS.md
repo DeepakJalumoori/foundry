@@ -52,13 +52,13 @@ Keep M1 small—focus only on what is needed to accept candidate input, show pro
 
 ---
 
-## M4: Startup discovery, company research, funding/hiring signals, and founder discovery
+## M4: Startup discovery, company research, funding/hiring signals, and founder discovery (Complete)
 
 - **Deliverables:**
-  1. Define `SearchProvider`, `ResearchProvider`, and `FounderDiscoveryProvider` interfaces; evaluate live vendor options before committing to a specific live provider.
-  2. Implement deterministic `Demo*` providers covering pre-seed to Series C startups with realistic funding signals, hiring signals (both **Active** and **Hidden** opportunities), founder details, email provenance, and verification statuses (`verified`, `unverified`, `unavailable`).
-  3. Enforce evidence rules in schemas/services: source URLs and dates where available, no fabricated emails/founders, and funding never treated as proof of hiring.
-  4. Add `pytest` tests verifying active vs. hidden classification, provenance fields, and fallback behavior.
+  1. Defined modular M4 provider interfaces (`StartupDiscoveryProvider`, `CompanyResearchProvider`, `FundingProvider`, `HiringSignalProvider`, `FounderProvider`) in `app/providers/m4_base.py`.
+  2. Implemented deterministic `Demo*` providers in `app/providers/m4_demo.py` covering pre-seed to Series C startups with realistic funding signals, **Active** and **Hidden** hiring signals, and founder records (`data_origin="demo"`).
+  3. Implemented M4 domain models (`SourceEvidence`, `EvidenceLink`, `DiscoveryRun`, `Company`, `CompanyResearch`, `FundingEvent`, `HiringSignal`, `JobOpportunity`, `Founder`) and Alembic migration `20261127_0003`, enforcing source provenance, funding != hiring, stale-job checks, and conflict detection.
+  4. Exposed `/api/discovery` and `/api/companies` endpoints and added isolated `pytest` tests across discovery, deduplication, research, funding, hiring signals, founders, APIs, and migrations.
 - **Dependencies:** M2 (persistence), M3 (candidate profile context).
 - **Acceptance criteria:**
   - Discovery returns pre-seed to Series C startups with sourced company info, funding signals, hiring signals, and founder contacts.

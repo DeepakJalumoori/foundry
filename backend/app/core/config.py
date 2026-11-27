@@ -29,6 +29,14 @@ class Settings(BaseSettings):
     llm_max_retries: int = 1
     demo_mode: bool = False
 
+    discovery_provider: str = "demo"
+    company_research_provider: str = "demo"
+    funding_provider: str = "demo"
+    hiring_signal_provider: str = "demo"
+    founder_provider: str = "demo"
+    provider_timeout_seconds: float = 15.0
+    provider_max_retries: int = 1
+
     @property
     def cors_origins_list(self) -> list[str]:
         origins = [origin.strip() for origin in self.cors_origins.split(",") if origin.strip()]

@@ -55,14 +55,14 @@ candidate_input
 
 ## Current development status
 
-Foundry has completed **M1 (minimal frontend)**, **M2 (backend foundation)**, and **M3 (candidate intelligence)**:
+Foundry has completed **M1 (minimal frontend)**, **M2 (backend foundation)**, **M3 (candidate intelligence)**, and **M4 (startup discovery & intelligence)**:
 
 - **Implemented:**
   - Minimal 4-state Next.js frontend (`frontend/components/agent/`, `frontend/components/ui/`).
-  - FastAPI + SQLAlchemy 2.x + SQLite + Alembic backend (`Foundry/backend/`) with `GET /api/health`, `POST /api/runs`, `GET /api/runs/{run_id}`, `POST /api/runs/{run_id}/process`, and `GET /api/candidates/{candidate_id}/profile`.
-  - PyMuPDF PDF text extraction (`app/services/resume_extractor.py`), structured `CandidateProfile` schema + evidence validation (`app/services/profile_validator.py`), `LLMProvider` abstraction (`DemoLLMProvider` and `GeminiLLMProvider` via `google-genai`), and `candidate_profiles` persistence (`alembic` revision `20261127_0002`).
-- **Not yet implemented (M4–M6):**
-  - Startup discovery, company/funding/hiring signal analysis, and founder discovery providers (**M4**).
+  - FastAPI + SQLAlchemy 2.x + SQLite + Alembic backend (`Foundry/backend/`) with M2–M4 endpoints (`/api/health`, `/api/runs`, `/api/candidates/{id}/profile`, `/api/discovery`, `/api/companies`).
+  - PyMuPDF PDF text extraction, structured `CandidateProfile` schema + evidence validation, `LLMProvider` abstraction (`DemoLLMProvider` and `GeminiLLMProvider`).
+  - M4 startup discovery, domain-based company deduplication, company research with conflict detection, funding intelligence, explainable hiring signal detection (**Active** vs. **Hidden**), founder discovery, and shared `source_evidence` provenance (`alembic` revision `20261127_0003`, deterministic `Demo*` providers).
+- **Not yet implemented (M5–M6):**
   - SQLite/BM25 RAG, 11-node LangGraph workflow, and deterministic matching (**M5**).
   - Outreach draft generation, approval persistence, and frontend-backend integration (**M6**).
 

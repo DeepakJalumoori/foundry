@@ -2,9 +2,16 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import candidates_router, health_router, runs_router
+from app.api.routes import (
+    candidates_router,
+    companies_router,
+    discovery_router,
+    health_router,
+    runs_router,
+)
 from app.core.config import get_settings
 from app.providers.llm import LLMProviderError
+from app.providers.m4_base import M4ProviderError
 from app.schemas.run import ErrorResponse
 from app.services.candidate_profile_service import (
     CandidateNotFoundError,
@@ -12,6 +19,7 @@ from app.services.candidate_profile_service import (
     ProfileNotFoundError,
     UnsupportedInputSourceError,
 )
+from app.services.discovery_orchestrator import CompanyNotFoundError, DiscoveryRunNotFoundError
 from app.services.file_storage import ResumeValidationError
 from app.services.resume_extractor import ResumeExtractionError
 from app.services.run_service import InputValidationError, RunNotFoundError
@@ -103,9 +111,38 @@ def create_app() -> FastAPI:
             content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
         )
 
+    @app.exception_handler(M4ProviderError)
+    async def _handle_m4_provider(_request: Request, exc: M4ProviderError) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
+    @app.exception_handler(DiscoveryRunNotFoundError)
+    async def _handle_discovery_run_not_found(
+        _request: Request,
+        exc: DiscoveryRunNotFoundError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
+    @app.exception_handler(CompanyNotFoundError)
+    async def _handle_company_not_found(
+        _request: Request,
+        exc: CompanyNotFoundError,
+    ) -> JSONResponse:
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResponse(code=exc.code, detail=exc.detail).model_dump(),
+        )
+
     app.include_router(health_router, prefix="/api")
     app.include_router(runs_router, prefix="/api")
     app.include_router(candidates_router, prefix="/api")
+    app.include_router(discovery_router, prefix="/api")
+    app.include_router(companies_router, prefix="/api")
 
     return app
 

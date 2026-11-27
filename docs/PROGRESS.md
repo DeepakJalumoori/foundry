@@ -1,6 +1,6 @@
 # Foundry — Progress Log
 
-**Last updated:** 2026-11-27 | **Project status:** **M3 complete** (candidate intelligence & structured profile extraction); ready for **M4** (startup discovery, signals, and founder discovery)
+**Last updated:** 2026-11-27 | **Project status:** **M4 complete** (startup discovery, research, funding, hiring signals & founder discovery); ready for **M5** (SQLite/BM25 RAG, LangGraph orchestration & deterministic matching)
 
 ---
 
@@ -28,9 +28,17 @@
   - `tests/`: Isolated `pytest` suite (67 passing tests across M2 and M3) using per-test temporary SQLite databases, temporary upload directories, and synthetic PDFs.
 - **Known M3 limitations:** Extraction executes synchronously on `POST /api/runs/{run_id}/process` (no background worker/queue); scanned image-only PDFs are marked `requires_manual_review` without OCR; LinkedIn URLs are rejected (`LINKEDIN_EXTRACTION_UNSUPPORTED`) without scraping.
 
-### C. Future work (not yet implemented)
+### C. M4 implementation (`Foundry/backend/`)
+- **Startup intelligence pipeline (synchronous Python orchestration, deterministic `Demo*` providers):**
+  - `app/models/m4.py` & `alembic/versions/20261127_0003_add_m4_intelligence_tables.py`: Added `source_evidence`, `evidence_links`, `discovery_runs`, `companies`, `company_research`, `funding_events`, `hiring_signals`, `job_opportunities`, and `founders`.
+  - `app/providers/m4_base.py` & `app/providers/m4_demo.py`: Modular provider ABCs and deterministic `Demo*` providers (`DISCOVERY_PROVIDER`, `COMPANY_RESEARCH_PROVIDER`, `FUNDING_PROVIDER`, `HIRING_SIGNAL_PROVIDER`, `FOUNDER_PROVIDER` defaulting to `demo`).
+  - `app/services/`: `source_validation.py`, `company_identity.py` (domain/external-id/cautious-name deduplication), `company_research_service.py` (conflict preservation), `funding_service.py` (currency/amount separation & 180-day recency), `hiring_service.py` (**Active** vs. **Hidden** classification; funding alone never proves hiring; 90-day stale-job guard), `founder_service.py` (conflict detection, no fabricated emails), and `discovery_orchestrator.py`.
+  - `app/api/routes/discovery.py` & `app/api/routes/companies.py`: `/api/discovery`, `/api/discovery/{run_id}`, `/api/companies`, `/api/companies/{company_id}`, `/api/companies/{company_id}/research`, `/funding`, `/hiring-signals`, and `/founders`.
+  - `tests/`: Added `test_m4_discovery_and_research.py`, `test_m4_signals_and_founders.py`, and `test_m4_api_and_migration.py` (80 total passing tests across M2–M4).
+- **Known M4 limitations:** Only deterministic `Demo*` providers are implemented; real external discovery/funding/job/founder APIs require configuring and implementing concrete adapters.
+
+### D. Future work (not yet implemented)
 - **No authentication / minimal sign-in** (deferred).
-- **No startup discovery, company research, funding/hiring signal analysis, or founder discovery** (M4).
 - **No local RAG** (SQLite/BM25) or **LangGraph** orchestration (M5).
 - **No deterministic matching** or **persisted outreach draft approval** (M5–M6).
 
